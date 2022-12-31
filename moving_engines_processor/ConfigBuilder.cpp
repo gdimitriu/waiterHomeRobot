@@ -41,4 +41,8 @@ int countRotate90Left = 1;
 int countRotate90Right = 1;
 int countRotate1Inner = 1;
 int countRotate1Outer = 1;
+
 bool hasRFID = false;
+
+bool hasColissionSensors = false;
+unsigned int colissionInterruptPin = 6;

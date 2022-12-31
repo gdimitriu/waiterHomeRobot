@@ -147,4 +147,16 @@ extern bool hasRFID;
  *  
  **********************************************/
 extern unsigned int ssPin;
+
+/**********************************************
+ * if has colission sensors
+ *  
+ **********************************************/
+ extern bool hasColissionSensors;
+
+/**********************************************
+ * interrupt pin for  colission sensors
+ *  
+ **********************************************/
+extern unsigned int colissionInterruptPin;
 #endif

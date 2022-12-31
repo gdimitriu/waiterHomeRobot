@@ -25,6 +25,7 @@
 #include "configuration.h"
 #include "MoveEngines.h"
 #include "rfid.h"
+#include "ColissionSensors.h"
 
 #define SERIAL_DEBUG_MODE true
 
@@ -57,6 +58,9 @@ void setup()
     engineSetup();
     if (hasRFID) {
       initRFID();
+    }
+    if (hasColissionSensors) {
+      initColissionSensors();
     }
 }
 

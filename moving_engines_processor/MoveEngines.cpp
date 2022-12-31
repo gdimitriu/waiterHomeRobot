@@ -24,12 +24,18 @@
 #include <EnableInterrupt.h>
 #include "configuration.h"
 #include "MoveEngines.h"
+#include "ColissionSensors.h"
 
 extern Adafruit_PWMServoDriver pwmDriver; 
 
 //variables for encoders
 float wheelRadius = 3.5f;
 int encoderWheelSteps = 20;
+/**********************************************
+ * if has collision if true else false
+ * 
+ **********************************************/
+static volatile bool hasCollision = false;
 
 static volatile uint16_t  left_front_encoder_count = 0;
 static volatile uint16_t  right_front_encoder_count = 0;
@@ -44,18 +50,19 @@ bool encoderEnabled = false;
 /*
  * isr for encoder pins
  */
-void isrLeftFrontEncoder() {
+static void isrLeftFrontEncoder() {
   left_front_encoder_count++;
 }
 
-void isrRightFrontEncoder() {
+static void isrRightFrontEncoder() {
   right_front_encoder_count++;
 }
-void isrLeftBackEncoder() {
+
+static void isrLeftBackEncoder() {
   left_back_encoder_count++;
 }
 
-void isrRightBackEncoder() {
+static void isrRightBackEncoder() {
   right_back_encoder_count++;
 }
 
@@ -87,6 +94,10 @@ void enableEncoders() {
   resetCounters();
 }
 
+static void detectColissionIsr(void) {
+  hasCollision = true;
+}
+
 void engineSetup() {
   PPI_front_left = encoderWheelSteps/(2*PI*wheelRadius);
   PPI_front_right = encoderWheelSteps/(2*PI*wheelRadius);
@@ -98,6 +109,11 @@ void engineSetup() {
   pinMode(leftBackEncoderPin, INPUT_PULLUP);
   pinMode(rightBackEncoderPin, INPUT_PULLUP);
   encoderEnabled = false;
+  //enable interrupt sensors
+  if (hasColissionSensors) {
+    pinMode(colissionInterruptPin, INPUT_PULLUP);
+    enableInterrupt(colissionInterruptPin, detectColissionIsr, FALLING);
+  }
 }
 
 uint16_t getLeftFrontEncoderCount() {
