@@ -61,6 +61,15 @@ byte indexSerial = 0; // Index into array; where to store the character
 boolean cleanupSerial;
 
 StringList listOfCommands;
+void printMenu() {
+  Serial.println("Ultralight C (36pages) reader and writer");
+  Serial.println("****************************************");
+  Serial.println("R# read the card");
+  Serial.println("c# clear the commands list");
+  Serial.println("l# print the commands list");
+  Serial.println("W# write the commands list");
+  Serial.println("xxx# add the xxx command to the end of the list");
+}
 
 void setup() {
   Serial.begin(9600); // Initialize serial communications with the PC
@@ -71,6 +80,7 @@ void setup() {
     Serial.println("Self test failed");
   mfrc522.PCD_Init(); // Init MFRC522 card 
   Serial.println("Started!");
+  printMenu();
 }
 
 
