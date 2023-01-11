@@ -26,5 +26,5 @@
  * 
  **********************************************/
 extern void initColissionSensors(void);
-
+extern bool* readSensors();
 #endif

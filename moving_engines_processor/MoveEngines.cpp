@@ -199,31 +199,58 @@ void go(int speedLeft, int speedRight) {
 
 
 void moveLinear(float distance) {
+  float targetDistance = distance;
   float currentLeftFrontPosition = 0.0f;
   float currentRightFrontPosition = 0.0f;
   float currentLeftBackPosition = 0.0f;
   float currentRightBackPosition = 0.0f;
-  if (distance > 0) {
+  if (targetDistance > 0) {
     go(currentPower,currentPower);
-  } else if (distance < 0) {
+  } else if (targetDistance < 0) {
     go(-currentPower,-currentPower);
-    distance = -distance;
+    targetDistance = -targetDistance;
   } else {
     return;
   }
   boolean stopLeft = false;
   boolean stopRight = false;
   while(!stopLeft || !stopRight){
+    if (hasCollision == true) {
+      breakAllEngines();
+      bool *sensors = readSensors();
+      if (sensors[0] == true || sensors[1] == true || sensors[2] == true) {
+        if (distance < 0) { //resume
+          go(-currentPower,-currentPower);
+        } else {
+          stopLeft = true;
+          stopRight = true;
+        }
+      } else if (sensors[3] == true) {
+        if (distance < 0) { //resume
+          go(currentPower,currentPower);
+        } else {
+          stopLeft = true;
+          stopRight = true;
+        }
+      } else {
+        if (distance > 0) {
+          go(currentPower,currentPower);
+        } else if (distance < 0) {
+          go(-currentPower,-currentPower);
+        }
+      }
+      hasCollision = false;
+    }
     if (!stopLeft) {
-      if((distance - currentLeftFrontPosition) > 0.2){
-        currentLeftFrontPosition = left_front_encoder_count/PPI_front_left;
+      if(((targetDistance - currentLeftFrontPosition) > 0.2)) {
+         currentLeftFrontPosition = left_front_encoder_count/PPI_front_left;
       } else {
         stopLeftEngines();
         stopLeft = true;
       }
     }
     if (!stopRight) {
-      if ((distance-currentRightFrontPosition) > 0.2) {
+      if (((targetDistance - currentRightFrontPosition) > 0.2)) {
         currentRightFrontPosition = right_front_encoder_count/PPI_front_right;
       } else {
         stopRightEngines();
@@ -240,10 +267,10 @@ void rotateDegree(long nr) {
   if (nr < 0) {
     go(-currentPower,currentPower);
     nr = -nr;
-    while(left_front_encoder_count < countRotate1Inner*nr && right_front_encoder_count < countRotate1Outer*nr);
+    while(left_front_encoder_count < countRotate1Inner*nr && right_front_encoder_count < countRotate1Outer*nr && hasCollision == false);
   } else if (nr > 0) {
     go(currentPower,-currentPower);
-    while(left_front_encoder_count < countRotate1Outer*nr && right_front_encoder_count < countRotate1Inner*nr);
+    while(left_front_encoder_count < countRotate1Outer*nr && right_front_encoder_count < countRotate1Inner*nr && hasCollision == false);
   } else {
     return;
   }

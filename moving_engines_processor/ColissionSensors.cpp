@@ -23,11 +23,56 @@
 #include <PCF8574.h>
 #include "ColissionSensors.h"
 #include "configuration.h"
+#define FRONT_LEFT_MASK 0b00000001
+#define FRONT_CENTER_MASK 0b00000010
+#define FRONT_RIGHT_MASK 0b00000100
+#define REAR_CENTER_MASK 0b00001000
+#define PIN4_MASK 0b00010000
+#define PIN5_MASK 0b00100000
+#define PIN6_MASK 0b01000000
+#define PIN7_MASK 0b10000000
+
 
 bool hasCollision = false;
 
 static PCF8574 expander;
 
+static bool *collision;
+
 void initColissionSensors(void) {
   expander.begin(0x21);
+  expander.pinMode(0, INPUT_PULLUP); //left front sensor
+  expander.pinMode(1, INPUT_PULLUP); //center front sensor
+  expander.pinMode(2, INPUT_PULLUP); //right front sensor
+  expander.pinMode(3, INPUT_PULLUP); //rear sensor
+  collision = new bool[8];
+}
+
+bool* readSensors() {
+  
+  uint8_t sensors = expander.read();
+  if (( sensors & FRONT_LEFT_MASK) > 0) {
+    collision[0] = false;
+  } else {
+    collision[0] = true;
+  }
+  if (( sensors & FRONT_CENTER_MASK) > 0) {
+    collision[1] = false;
+  } else {
+    collision[1] = true;
+  }
+  if (( sensors & FRONT_RIGHT_MASK) > 0) {
+    collision[2] = false;
+  } else {
+    collision[2] = true;
+  }
+  if (( sensors & REAR_CENTER_MASK) > 0) {
+    collision[3] = false;
+  } else {
+    collision[3] = true;
+  }
+  for (int i = 4; i < 8; i++) {
+    collision[i] = false;
+  }
+  return collision;
 }

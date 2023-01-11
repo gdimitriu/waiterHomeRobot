@@ -157,7 +157,7 @@ bool setCurrentPowerCommand() {
   return true;
 }
 
-bool processPlatformUnsupoprtedCommand() {
+bool processPlatformUnsupportedCommand() {
   sendOK();
   makeCleanup();
   isValidInput = true;
@@ -324,10 +324,10 @@ bool makeMove() {
         return  setCurrentPowerCommand();
       } else if (inData[0] == 'd') {
         //this does not support low power distance
-        return processPlatformUnsupoprtedCommand();
+        return processPlatformUnsupportedCommand();
       } else if (inData[0] == 's') {
         //this does not support stop distance
-        return processPlatformUnsupoprtedCommand();
+        return processPlatformUnsupportedCommand();
       } else if (inData[0] == 'M') {
         return moveOrRotateUntilNextCommand();
       } else if (inData[0] == 'm') {
