@@ -20,6 +20,13 @@
 */
 #ifndef __RFID_H__
 #define __RFID_H__
+#include <Arduino.h>
+/**********************************************
+ * size of the mifare ultralight C 36 pages
+ * 
+ **********************************************/
+#define ULTRALIGHT_C_PAGES 31
+#define BUFFER_SIZE (ULTRALIGHT_C_PAGES*4)
 
 /**********************************************
  * init the rfid
@@ -37,6 +44,6 @@ bool isCardPresent();
  * read the rfid sticker
  * 
  **********************************************/
-void readRFID(char *inData);
+bool readRFID(char *inData, uint8_t &size);
 
 #endif

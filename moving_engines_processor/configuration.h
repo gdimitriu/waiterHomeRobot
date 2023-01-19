@@ -21,142 +21,183 @@
 #ifndef __CONFIGURATION_H__
 #define __CONFIGURATION_H__
 
+/************************************************************************
+ * 
+ * CONSTANTS FOR ANDROID AND HARDWARE PLATFORM
+ * 
+ ************************************************************************/
+
 #define SERIAL_BUFFER 50
+
+#define RxD 8
+#define TxD 9
+
+/**********************************************
+ * enable serial debug
+ * (do not use when use the android app)
+ * 
+ **********************************************/
+#define SERIAL_DEBUG_MODE
 
 /**********************************************
  * left front ecoder pin from arduino
  * 
  **********************************************/
-extern unsigned int leftFrontEncoderPin;
+#define LEFT_FRONT_ENCODER_PIN 5
 
 /**********************************************
  * right front ecoder pin from arduino
  * 
  **********************************************/
-extern unsigned int rightFrontEncoderPin;
+#define RIGHT_FRONT_ENCODER_PIN 3
 
 /**********************************************
  * left back ecoder pin from arduino
  * 
  **********************************************/
-extern unsigned int leftBackEncoderPin;
+#define LEFT_BACK_ENCODER_PIN 4
 
 /**********************************************
  * right back ecoder pin from arduino
  * 
  **********************************************/
-extern unsigned int rightBackEncoderPin;
+#define RIGHT_BACK_ENCODER_PIN 2
+
+/**********************************************
+ * maximum power for Adafruit_PWMServoDriver
+ **********************************************/
+#define ABSOLUTE_MAX_POWER 4095
 
 /**********************************************
  * left front motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int leftFrontMotorPin1;
+#define LEFT_FRONT_MOTOR_PIN1 14
 
 /**********************************************
  * left front motor pin  2
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int leftFrontMotorPin2;
+#define LEFT_FRONT_MOTOR_PIN2 15
 
 /**********************************************
  * right front motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int rightFrontMotorPin1;
+#define RIGHT_FRONT_MOTOR_PIN1 13
 
 /**********************************************
  * right front motor pin 2
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int rightFrontMotorPin2;
+#define RIGHT_FRONT_MOTOR_PIN2 12
 
 /**********************************************
  * left back motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int leftBackMotorPin1;
+#define LEFT_BACK_MOTOR_PIN1 0
 
 /**********************************************
  * left back motor pin 2
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int leftBackMotorPin2;
+#define LEFT_BACK_MOTOR_PIN2 1
 
 /**********************************************
  * right back motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int rightBackMotorPin1;
+#define RIGHT_BACK_MOTOR_PIN1 2
 
 /**********************************************
  * right back motor pin 2
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern unsigned int rightBackMotorPin2;
+ #define RIGHT_BACK_MOTOR_PIN2 3
 
 /**********************************************
  * nr of counter to rotate 90 left
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern int countRotate90Left;
+#define COUNT_ROTATE_90_LEFT 1
 
 /**********************************************
  * nr of counter to rotate 90 right
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern int countRotate90Right;
+#define COUNT_ROTATE_90_RIGHT 1
 
 /**********************************************
  * nr of counter to rotate inner wheel
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
- 
-extern int countRotate1Inner;
+#define COUNT_ROTATE_INNER 1
+
 /**********************************************
  * nr of counter to rotate outer wheel
  * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern int countRotate1Outer;
-
-extern int maxPower;
-extern int currentPower;
-extern int minPower;
+#define COUNT_ROATE_OUTER 1
 
 /**********************************************
  * wheel radius in cm
- * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern float wheelRadius;
+#define WHEEL_RADIUS 3.5f
 
 /**********************************************
  * nr counter for the encoder wheel
- * this is the pin from Adafruit_PWMServoDriver. 
  **********************************************/
-extern int encoderWheelSteps;
-
+#define ENCODER_WHEEL_STEPS 20
 
 /**********************************************
  * if has rfid MFRC522
  *  
  **********************************************/
-extern bool hasRFID;
+#define HAS_RFID
 
 /**********************************************
  * ss pin for rfid
  *  
  **********************************************/
-extern unsigned int ssPin;
+#define SS_RFID_PIN 10
 
 /**********************************************
  * if has colission sensors
  *  
  **********************************************/
- extern bool hasColissionSensors;
+#define HAS_COLISSIONS_SENSORS
 
 /**********************************************
  * interrupt pin for  colission sensors
  *  
  **********************************************/
-extern unsigned int colissionInterruptPin;
+#define COLISSION_INTERRUPT_PIN 6
+
+
+
+/************************************************************************
+ * 
+ * CONSTANTS AT STARTUP BUT COULD BE MODIFIED USING SERIAL COMMANDS
+ * 
+ ************************************************************************/
+ 
+/**********************************************
+ * current maximum power
+ *  
+ **********************************************/
+extern int maxPower;
+
+/**********************************************
+ * current power
+ *  
+ **********************************************/
+extern int currentPower;
+
+/**********************************************
+ * minimum power
+ *  
+ **********************************************/
+extern int minPower;
+
 #endif

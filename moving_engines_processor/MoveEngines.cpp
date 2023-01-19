@@ -22,15 +22,13 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <EnableInterrupt.h>
+#include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
 #include "ColissionSensors.h"
 
 extern Adafruit_PWMServoDriver pwmDriver; 
 
-//variables for encoders
-float wheelRadius = 3.5f;
-int encoderWheelSteps = 20;
 /**********************************************
  * if has collision if true else false
  * 
@@ -47,6 +45,12 @@ static float PPI_front_right;
 static float PPI_back_left;
 static float PPI_back_right;
 bool encoderEnabled = false;
+
+void neoSSerial1ISR()
+{
+    NeoSWSerial::rxISR(*portInputRegister(digitalPinToPort(RxD)));
+}
+
 /*
  * isr for encoder pins
  */
@@ -76,20 +80,20 @@ void resetCounters() {
 void disableEncoders() {
   if (!encoderEnabled)
     return;
-  disableInterrupt(leftFrontEncoderPin);
-  disableInterrupt(rightFrontEncoderPin);
-  disableInterrupt(leftBackEncoderPin);
-  disableInterrupt(rightBackEncoderPin);  
+  disableInterrupt(LEFT_FRONT_ENCODER_PIN);
+  disableInterrupt(RIGHT_FRONT_ENCODER_PIN);
+  disableInterrupt(LEFT_BACK_ENCODER_PIN);
+  disableInterrupt(RIGHT_BACK_ENCODER_PIN);  
   encoderEnabled = false;
 }
 
 void enableEncoders() {
   if (encoderEnabled)
     return;
-  enableInterrupt(leftFrontEncoderPin, isrLeftFrontEncoder, RISING);
-  enableInterrupt(rightFrontEncoderPin, isrRightFrontEncoder, RISING);
-  enableInterrupt(leftBackEncoderPin, isrLeftBackEncoder, RISING);
-  enableInterrupt(rightBackEncoderPin, isrRightBackEncoder, RISING);
+  enableInterrupt(LEFT_FRONT_ENCODER_PIN, isrLeftFrontEncoder, RISING);
+  enableInterrupt(RIGHT_FRONT_ENCODER_PIN, isrRightFrontEncoder, RISING);
+  enableInterrupt(LEFT_BACK_ENCODER_PIN, isrLeftBackEncoder, RISING);
+  enableInterrupt(RIGHT_BACK_ENCODER_PIN, isrRightBackEncoder, RISING);
   encoderEnabled = true;
   resetCounters();
 }
@@ -99,21 +103,23 @@ static void detectColissionIsr(void) {
 }
 
 void engineSetup() {
-  PPI_front_left = encoderWheelSteps/(2*PI*wheelRadius);
-  PPI_front_right = encoderWheelSteps/(2*PI*wheelRadius);
-  PPI_back_left = encoderWheelSteps/(2*PI*wheelRadius);
-  PPI_back_right = encoderWheelSteps/(2*PI*wheelRadius);
+  PPI_front_left = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
+  PPI_front_right = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
+  PPI_back_left = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
+  PPI_back_right = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
   //enable encoders ISR
-  pinMode(leftFrontEncoderPin, INPUT_PULLUP);
-  pinMode(rightFrontEncoderPin, INPUT_PULLUP);
-  pinMode(leftBackEncoderPin, INPUT_PULLUP);
-  pinMode(rightBackEncoderPin, INPUT_PULLUP);
+  pinMode(LEFT_FRONT_ENCODER_PIN, INPUT_PULLUP);
+  pinMode(RIGHT_FRONT_ENCODER_PIN, INPUT_PULLUP);
+  pinMode(LEFT_BACK_ENCODER_PIN, INPUT_PULLUP);
+  pinMode(RIGHT_BACK_ENCODER_PIN, INPUT_PULLUP);
   encoderEnabled = false;
   //enable interrupt sensors
-  if (hasColissionSensors) {
-    pinMode(colissionInterruptPin, INPUT_PULLUP);
-    enableInterrupt(colissionInterruptPin, detectColissionIsr, FALLING);
-  }
+#ifdef HAS_COLLISION_SENSORS  
+    pinMode(COLISSION_INTERRUPT_PIN, INPUT_PULLUP);
+    enableInterrupt(COLISSION_INTERRUPT_PIN, detectColissionIsr, FALLING);
+#endif
+  //enable communication ... all enable interrupt should be in same cpp file
+  enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
 }
 
 uint16_t getLeftFrontEncoderCount() {
@@ -133,27 +139,27 @@ uint16_t getRightBackEncoderCount() {
 }
 
 void stopLeftEngines() {
-    pwmDriver.setPWM(leftFrontMotorPin1, 0, 4095);
-    pwmDriver.setPWM(leftFrontMotorPin2, 0, 4095);
-    pwmDriver.setPWM(leftBackMotorPin1, 0, 4095);
-    pwmDriver.setPWM(leftBackMotorPin2, 0, 4095);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 4095);
 }
 
 void stopRightEngines() {
-    pwmDriver.setPWM(rightFrontMotorPin1, 0, 4095);
-    pwmDriver.setPWM(rightFrontMotorPin2, 0, 4095);
-    pwmDriver.setPWM(rightBackMotorPin1, 0, 4095);
-    pwmDriver.setPWM(rightBackMotorPin2, 0, 4095);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 4095);
 }
 void breakAllEngines() {
-    pwmDriver.setPWM(leftFrontMotorPin1, 0, 4095);
-    pwmDriver.setPWM(leftFrontMotorPin2, 0, 4095);
-    pwmDriver.setPWM(leftBackMotorPin1, 0, 4095);
-    pwmDriver.setPWM(leftBackMotorPin2, 0, 4095);
-    pwmDriver.setPWM(rightFrontMotorPin1, 0, 4095);
-    pwmDriver.setPWM(rightFrontMotorPin2, 0, maxPower);    
-    pwmDriver.setPWM(rightBackMotorPin1, 0, maxPower);
-    pwmDriver.setPWM(rightBackMotorPin2, 0, maxPower);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, maxPower);    
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, maxPower);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, maxPower);
 }
 /*
 * Move the platform in predefined directions.
@@ -161,39 +167,39 @@ void breakAllEngines() {
 void go(int speedLeft, int speedRight) {
 
   if (speedLeft == 0 && speedRight == 0 ) {
-    pwmDriver.setPWM(leftFrontMotorPin1, 0, 0);
-    pwmDriver.setPWM(leftFrontMotorPin2, 0, 0);
-    pwmDriver.setPWM(leftBackMotorPin1, 0, 0);
-    pwmDriver.setPWM(leftBackMotorPin2, 0, 0);
-    pwmDriver.setPWM(rightFrontMotorPin1, 0, 0);
-    pwmDriver.setPWM(rightFrontMotorPin2, 0, 0);
-    pwmDriver.setPWM(rightBackMotorPin1, 0, 0);
-    pwmDriver.setPWM(rightBackMotorPin2, 0, 0);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 0);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 0);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 0);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 0);
     return;
   }
   if (speedLeft > 0) {
-    pwmDriver.setPWM(leftFrontMotorPin1, 0, speedLeft);
-    pwmDriver.setPWM(leftFrontMotorPin2, 0, 0);
-    pwmDriver.setPWM(leftBackMotorPin1, 0, speedLeft);
-    pwmDriver.setPWM(leftBackMotorPin2, 0, 0);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, speedLeft);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 0);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, speedLeft);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 0);
   } 
   else {
-    pwmDriver.setPWM(leftFrontMotorPin1, 0, 0);
-    pwmDriver.setPWM(leftFrontMotorPin2, 0, -speedLeft);    
-    pwmDriver.setPWM(leftBackMotorPin1, 0, 0);
-    pwmDriver.setPWM(leftBackMotorPin2, 0, -speedLeft);    
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, -speedLeft);    
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, -speedLeft);    
   }
  
   if (speedRight > 0) {
-    pwmDriver.setPWM(rightFrontMotorPin1, 0, speedRight);
-    pwmDriver.setPWM(rightFrontMotorPin2, 0, 0);    
-    pwmDriver.setPWM(rightBackMotorPin1, 0, speedRight);
-    pwmDriver.setPWM(rightBackMotorPin2, 0, 0);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, speedRight);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 0);    
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, speedRight);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 0);
   }else {
-    pwmDriver.setPWM(rightFrontMotorPin1, 0, 0);    
-    pwmDriver.setPWM(rightFrontMotorPin2, 0, -speedRight);    
-    pwmDriver.setPWM(rightBackMotorPin1, 0, 0);
-    pwmDriver.setPWM(rightBackMotorPin2, 0, -speedRight);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 0);    
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, -speedRight);    
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, 0);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, -speedRight);
   }
 }
 
@@ -219,13 +225,15 @@ void moveLinear(float distance) {
       breakAllEngines();
       bool *sensors = readSensors();
       if (sensors[0] == true || sensors[1] == true || sensors[2] == true) {
+        //front sensors detect object
         if (distance < 0) { //resume
           go(-currentPower,-currentPower);
         } else {
           stopLeft = true;
           stopRight = true;
         }
-      } else if (sensors[3] == true) {
+      } else if (sensors[4] == true || sensors[3] == true || sensors[5] == true) {
+        //rear sensors detect object
         if (distance < 0) { //resume
           go(currentPower,currentPower);
         } else {
@@ -267,10 +275,10 @@ void rotateDegree(long nr) {
   if (nr < 0) {
     go(-currentPower,currentPower);
     nr = -nr;
-    while(left_front_encoder_count < countRotate1Inner*nr && right_front_encoder_count < countRotate1Outer*nr && hasCollision == false);
+    while(left_front_encoder_count < COUNT_ROTATE_INNER*nr && right_front_encoder_count < COUNT_ROATE_OUTER*nr && hasCollision == false);
   } else if (nr > 0) {
     go(currentPower,-currentPower);
-    while(left_front_encoder_count < countRotate1Outer*nr && right_front_encoder_count < countRotate1Inner*nr && hasCollision == false);
+    while(left_front_encoder_count < COUNT_ROATE_OUTER*nr && right_front_encoder_count < COUNT_ROTATE_INNER*nr && hasCollision == false);
   } else {
     return;
   }

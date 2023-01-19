@@ -19,19 +19,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
+#include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
 #include "rfid.h"
 #include "ColissionSensors.h"
 
-#define SERIAL_DEBUG_MODE true
-
 Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(0x40);
-
-#define ABSOLUTE_MAX_POWER 4095
 
 int maxPower = ABSOLUTE_MAX_POWER;
 int currentPower = maxPower;
@@ -43,10 +41,12 @@ char inData[SERIAL_BUFFER]; // Allocate some space for the string
 char inChar; // Where to store the character read
 byte index = 0; // Index into array; where to store the character
 
+NeoSWSerial BTSerial(RxD, TxD);
+
 void setup()
 {
     //enable serial
-    Serial.begin(38400);
+    BTSerial.begin(38400);     
     //init the PWM driver
     pwmDriver.begin();
     pwmDriver.setOscillatorFrequency(27000000);
@@ -56,12 +56,12 @@ void setup()
     isValidInput = false;
     cleanupSerial = false;
     engineSetup();
-    if (hasRFID) {
-      initRFID();
-    }
-    if (hasColissionSensors) {
-      initColissionSensors();
-    }
+#ifdef HAS_RFID    
+    initRFID();
+#endif
+#ifdef HAS_COLISSIONS_SENSORS    
+    initColissionSensors();
+#endif
 }
 
 boolean isValidNumber(char *data, int size)
@@ -83,12 +83,12 @@ boolean makeCleanup() {
   }
   index = 0;
   inChar ='0';
-  Serial.flush();
+  BTSerial.flush();
 }
 
 void sendOK() {
-  Serial.println("OK");
-  Serial.flush();
+  BTSerial.println("OK");
+  BTSerial.flush();
 }
 
 bool setMaxPowerCommand() {
@@ -269,34 +269,34 @@ bool makeMove() {
   if (strlen(inData) == 1) {
     if (inData[0] == 'I') {
       sprintf(buffer,"unsupported\r\n");
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] == 'V') {      
       sprintf(buffer,"%d\r\n",maxPower);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] =='v') {
       sprintf(buffer,"%d\r\n",minPower);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] =='c') {
       sprintf(buffer,"%d\r\n",currentPower);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     }  else if (inData[0] == 'd') {
       sprintf(buffer,"%d\r\n",0);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] == 's') {
       sprintf(buffer,"%d\r\n",0);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] == 'b') { 
       breakAllEngines();
     } else if (inData[0] == 'C') {
       sprintf(buffer,"%d:%d:%d:%d\r\n",getLeftFrontEncoderCount(),getRightFrontEncoderCount(),getLeftBackEncoderCount(),getRightBackEncoderCount());
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else if (inData[0] == 'R') {
       enableEncoders();
 #ifdef SERIAL_DEBUG_MODE      
@@ -305,12 +305,12 @@ bool makeMove() {
       sprintf(buffer,"%d\r\n",0);
 #endif      
       resetCounters();      
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
     } else {
       sprintf(buffer,"%d\r\n",0);
-      Serial.print(buffer);
-      Serial.flush();
+      BTSerial.print(buffer);
+      BTSerial.flush();
       makeCleanup();
       isValidInput = false;
       return false;
@@ -334,8 +334,8 @@ bool makeMove() {
         return moveOrRoatateWithDistanceCommand();
       } else {
         sprintf(buffer,"%d\r\n",0);
-        Serial.print(buffer);
-        Serial.flush();
+        BTSerial.print(buffer);
+        BTSerial.flush();
         makeCleanup();
         isValidInput = false;
         return false;
@@ -348,21 +348,21 @@ bool makeMove() {
 
 void loop()
 {
-
-  if (hasRFID) {
-    if (isCardPresent()) {
-      breakAllEngines();
-      readRFID(inData);
-      Serial.write(inData);
-      makeMove();
-      return;
-    }
+#ifdef HAS_RFID
+  if (isCardPresent()) {
+    breakAllEngines();
+    uint8_t readed;
+    readRFID(inData, readed);
+    BTSerial.write(inData);
+    makeMove();
+    return;
   }
-  while(Serial.available() > 0) // Don't read unless there you know there is data
+#endif  
+  while(BTSerial.available() > 0) // Don't read unless there you know there is data
   {
      if(index < 19) // One less than the size of the array
      {
-        inChar = Serial.read(); // Read a character
+        inChar = BTSerial.read(); // Read a character
         if (inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122) {
           continue;
         }

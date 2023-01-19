@@ -40,14 +40,16 @@
 #include <MFRC522.h>
 
 MFRC522 *mfrc522;
-//Ultraligth mem = 16 pages. 4 bytes per page. 
+//Ultraligth mem = 36 pages. 4 bytes per page. 
 //Pages 0 to 4 are for special functions.
 //it has 36 pages https://www.optimusdigital.ro/ro/wireless-rfid/2548-sticker-nfc-ntag203-alb-rotund-144-bytes.html
-static uint8_t pageAddr = 0x05;
-static byte buffer[44];//max is 128
+
+static byte readBuffer[18]; //16 + 2 CRC
+static byte size = sizeof(byte) * BUFFER_SIZE;
+static uint8_t pageAddr = 0x06;
 
 void initRFID() {
-  mfrc522 = new MFRC522(ssPin,MFRC522::UNUSED_PIN);
+  mfrc522 = new MFRC522(SS_RFID_PIN,MFRC522::UNUSED_PIN);
   mfrc522->PCD_Init(); // Init MFRC522 card
 }
 bool isCardPresent() {
@@ -60,9 +62,20 @@ bool isCardPresent() {
   return true;
 }
 
-void readRFID(char *inData) {
-    MFRC522::StatusCode status;
-    byte size = sizeof(buffer);
-    status = (MFRC522::StatusCode) mfrc522->MIFARE_Read(pageAddr, buffer, &size);
-    
+bool readRFID(char *inData, uint8_t &bufferPos) {
+  
+  MFRC522::StatusCode status;
+  memset(inData, 0, BUFFER_SIZE);
+  bufferPos = 0;
+  for (int j = 0; j < floor(ULTRALIGHT_C_PAGES/4.0); ++j) {
+    memset(readBuffer, 0, 18);
+    //data in 4 blocks is readed at once.
+    status = (MFRC522::StatusCode) mfrc522->MIFARE_Read(pageAddr+(j*4), readBuffer, &size);
+    if (status != MFRC522::STATUS_OK) {
+      return false;
+    }
+    memcpy(&inData[bufferPos],readBuffer,16);
+    bufferPos += 16;
+  }
+  return true;
 }

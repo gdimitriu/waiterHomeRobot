@@ -26,9 +26,9 @@
 #define FRONT_LEFT_MASK 0b00000001
 #define FRONT_CENTER_MASK 0b00000010
 #define FRONT_RIGHT_MASK 0b00000100
-#define REAR_CENTER_MASK 0b00001000
-#define PIN4_MASK 0b00010000
-#define PIN5_MASK 0b00100000
+#define REART_LEFT_MASK 0b00001000
+#define REAR_CENTER_MASK 0b00010000
+#define REAR_RIGHT_MASK 0b00100000
 #define PIN6_MASK 0b01000000
 #define PIN7_MASK 0b10000000
 
@@ -44,7 +44,7 @@ void initColissionSensors(void) {
   expander.pinMode(0, INPUT_PULLUP); //left front sensor
   expander.pinMode(1, INPUT_PULLUP); //center front sensor
   expander.pinMode(2, INPUT_PULLUP); //right front sensor
-  expander.pinMode(3, INPUT_PULLUP); //rear sensor
+  expander.pinMode(4, INPUT_PULLUP); //rear sensor
   collision = new bool[8];
 }
 
@@ -67,11 +67,12 @@ bool* readSensors() {
     collision[2] = true;
   }
   if (( sensors & REAR_CENTER_MASK) > 0) {
-    collision[3] = false;
+    collision[4] = false;
   } else {
-    collision[3] = true;
+    collision[4] = true;
   }
-  for (int i = 4; i < 8; i++) {
+  collision[3] = false;
+  for (int i = 5; i < 8; i++) {
     collision[i] = false;
   }
   return collision;
