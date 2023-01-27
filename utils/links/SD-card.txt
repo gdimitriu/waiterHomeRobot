@@ -1,0 +1,8 @@
+### COMPONENT
+https://www.optimusdigital.ro/ro/shield-uri-pentru-arduino/3931-shield-card-microsd-sparkfun-cu-level-shifter-integrat.html
+
+#TUTORIALS AND EXAMPLES
+https://learn.sparkfun.com/tutorials/microsd-breakout-with-level-shifter-hookup-guide
+https://howtomechatronics.com/tutorials/arduino/arduino-sd-card-data-logging-excel-tutorial/
+https://learn.adafruit.com/adafruit-micro-sd-breakout-board-card-tutorial/arduino-wiring
+
