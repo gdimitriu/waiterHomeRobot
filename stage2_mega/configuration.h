@@ -29,14 +29,14 @@
  **********************************************************************/
 /**********************************************
  * 
- * decomment this to have LCD test
+ * uncomment this to have LCD test
  * 
  **********************************************/
 //#define TEST_LCD
 
 /*********************************************
  * 
- * decomment this to have read from SD and
+ * uncomment this to have read from SD and
  * print on LCD test
  * data are into tests/sd_lcd.txt
  * 

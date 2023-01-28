@@ -48,7 +48,7 @@ void setup()
     //enable serial
     BTSerial.begin(38400);     
     //init the PWM driver
-    pwmDriver.begin();
+    pwmDriver.begin(PCA9685_ADDRESS);
     pwmDriver.setOscillatorFrequency(27000000);
     pwmDriver.setPWMFreq(50.0);
     Wire.setClock(400000);

@@ -40,7 +40,7 @@ static PCF8574 expander;
 static bool *collision;
 
 void initColissionSensors(void) {
-  expander.begin(0x21);
+  expander.begin(PCF8574_ADDRESS);
   expander.pinMode(0, INPUT_PULLUP); //left front sensor
   expander.pinMode(1, INPUT_PULLUP); //center front sensor
   expander.pinMode(2, INPUT_PULLUP); //right front sensor

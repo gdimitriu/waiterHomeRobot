@@ -22,9 +22,24 @@
 #define __COLISSION_SENSORS_H__
 
 /**********************************************
+ * 
  * init the sensors
  * 
  **********************************************/
 extern void initColissionSensors(void);
+
+/**********************************************
+ * 
+ * read the values from sensors array of 8 sensors:
+ * 0 is front left
+ * 1 is front center
+ * 2 is front right
+ * 3 is rear left (not used now)
+ * 4 is rear center
+ * 5 is rear right (not used now
+ * 6 not used
+ * 7 not used
+ * 
+ **********************************************/
 extern bool* readSensors();
 #endif

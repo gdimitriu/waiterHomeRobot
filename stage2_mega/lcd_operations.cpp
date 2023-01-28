@@ -95,7 +95,6 @@ void printCurrentFilePath(char *filePath) {
     printNextLineText("line 1",24);
     printNextLineText("line 2",24);
     printNextLineText("line 3",24);
-    printCurrentFilePath("route 02");
     printNextLineText("line 4",24);  
   }
 

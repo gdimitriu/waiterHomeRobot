@@ -23,11 +23,14 @@
 #define __MOVEENGINES_H__ 
 
 /**********************************************
+ * 
  * move linear with distance
  * 
  **********************************************/
 extern void moveLinear(float distance);
+
 /**********************************************
+ * 
  * rotate the platform with degree
  * negative values are for left
  * positive values are for right
@@ -36,80 +39,94 @@ extern void moveLinear(float distance);
 extern void rotateDegree(long nr);
 
 /**********************************************
+ * 
  * move all engines with left and right speed
  * 
  **********************************************/
 extern void go(int speedLeft, int speedRight);
 
 /**********************************************
+ * 
  * break all engines
  * 
  **********************************************/
 extern void breakAllEngines();
 
 /**********************************************
+ * 
  * reset encoder counters
  * 
  **********************************************/
 extern void resetCounters();
 
 /**********************************************
+ * 
  * return the left front encoder count
  * 
  **********************************************/
 extern uint16_t getLeftFrontEncoderCount();
 
 /**********************************************
+ * 
  * return the right front encoder count
  * 
  **********************************************/
 extern uint16_t getRightFrontEncoderCount();
 
 /**********************************************
+ * 
  * return the left back encoder count
  * 
  **********************************************/
 extern uint16_t getLeftBackEncoderCount();
 
 /**********************************************
+ * 
  * return the right back encoder count
  * 
  **********************************************/
 extern uint16_t getRightBackEncoderCount();
 
 /**********************************************
+ * 
  * enable encoders for move with distance
  * 
  **********************************************/
 extern void enableEncoders();
 
 /**********************************************
+ * 
  * disable encoders
  * 
  **********************************************/
 extern void disableEncoders();
 
 /**********************************************
+ * 
  * setup engines, encoders and sensors
  * 
  **********************************************/
 extern void engineSetup();
 
 /**********************************************
+ * 
  * is interrupted by sensors
  * 
  **********************************************/
 extern bool isInterrupted();
 
 /**********************************************
+ * 
  * reset interrupt
  * 
  **********************************************/
 extern void resetInterrupt();
 
 /**********************************************
+ * 
  * get the current distances
  * 
  **********************************************/
 extern float* getCurrentDistances();
+
 #endif

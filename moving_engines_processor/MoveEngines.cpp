@@ -286,10 +286,10 @@ void rotateDegree(long nr) {
   if (nr < 0) {
     go(-currentPower,currentPower);
     nr = -nr;
-    while(left_front_encoder_count < COUNT_ROTATE_INNER*nr && right_front_encoder_count < COUNT_ROATE_OUTER*nr && hasCollision == false);
+    while(left_front_encoder_count < COUNT_ROTATE_INNER * nr && right_front_encoder_count < COUNT_ROTATE_OUTER * nr && hasCollision == false);
   } else if (nr > 0) {
     go(currentPower,-currentPower);
-    while(left_front_encoder_count < COUNT_ROATE_OUTER*nr && right_front_encoder_count < COUNT_ROTATE_INNER*nr && hasCollision == false);
+    while(left_front_encoder_count < COUNT_ROTATE_OUTER * nr && right_front_encoder_count < COUNT_ROTATE_INNER * nr && hasCollision == false);
   } else {
     return;
   }
