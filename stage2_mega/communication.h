@@ -1,5 +1,6 @@
 /*
  * Stage 2 - communication module
+ * 
  * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
@@ -24,18 +25,21 @@
 #include "configuration.h"
 
 /**********************************************
+ * 
  * initialize the communications
  * 
  **********************************************/
 extern void initCommunications();
 
 /**********************************************
+ * 
  * receive the command
  * 
  **********************************************/
 extern void receiveCommand();
 
 /**********************************************
+ * 
  * send command to moving engines
  * 
  **********************************************/

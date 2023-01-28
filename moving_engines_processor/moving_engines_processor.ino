@@ -165,6 +165,7 @@ bool processPlatformUnsupportedCommand() {
 }
 
 bool moveOrRotateUntilNextCommand() {
+  resetInterrupt();
   disableEncoders();
   //remove M from command
   for (uint8_t i = 0 ; i < strlen(inData); i++) {
@@ -331,7 +332,14 @@ bool makeMove() {
       } else if (inData[0] == 'M') {
         return moveOrRotateUntilNextCommand();
       } else if (inData[0] == 'm') {
-        return moveOrRoatateWithDistanceCommand();
+        bool moving = moveOrRoatateWithDistanceCommand();
+        if (isInterrupted()) {
+          float *distances = getCurrentDistances();
+          sprintf(buffer,"I%f,%f,%f,%f#", distances[0], distances[1], distances[2], distances[3]);
+          BTSerial.print(buffer);
+          BTSerial.flush();
+           resetInterrupt();
+        }       
       } else {
         sprintf(buffer,"%d\r\n",0);
         BTSerial.print(buffer);
@@ -357,7 +365,7 @@ void loop()
     makeMove();
     return;
   }
-#endif  
+#endif
   while(BTSerial.available() > 0) // Don't read unless there you know there is data
   {
      if(index < 19) // One less than the size of the array

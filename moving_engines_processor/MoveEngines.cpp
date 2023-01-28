@@ -44,7 +44,13 @@ static float PPI_front_left;
 static float PPI_front_right;
 static float PPI_back_left;
 static float PPI_back_right;
+static float currentLeftFrontPosition = 0.0f;
+static float currentRightFrontPosition = 0.0f;
+static float currentLeftBackPosition = 0.0f;
+static float currentRightBackPosition = 0.0f;
 bool encoderEnabled = false;
+
+static float distances[4];
 
 void neoSSerial1ISR()
 {
@@ -206,10 +212,11 @@ void go(int speedLeft, int speedRight) {
 
 void moveLinear(float distance) {
   float targetDistance = distance;
-  float currentLeftFrontPosition = 0.0f;
-  float currentRightFrontPosition = 0.0f;
-  float currentLeftBackPosition = 0.0f;
-  float currentRightBackPosition = 0.0f;
+  currentLeftFrontPosition = 0.0f;
+  currentRightFrontPosition = 0.0f;
+  currentLeftBackPosition = 0.0f;
+  currentRightBackPosition = 0.0f;
+
   if (targetDistance > 0) {
     go(currentPower,currentPower);
   } else if (targetDistance < 0) {
@@ -228,6 +235,7 @@ void moveLinear(float distance) {
         //front sensors detect object
         if (distance < 0) { //resume
           go(-currentPower,-currentPower);
+          hasCollision = false;
         } else {
           stopLeft = true;
           stopRight = true;
@@ -236,6 +244,7 @@ void moveLinear(float distance) {
         //rear sensors detect object
         if (distance < 0) { //resume
           go(currentPower,currentPower);
+          hasCollision = false;
         } else {
           stopLeft = true;
           stopRight = true;
@@ -243,11 +252,13 @@ void moveLinear(float distance) {
       } else {
         if (distance > 0) {
           go(currentPower,currentPower);
+          hasCollision = false;
         } else if (distance < 0) {
           go(-currentPower,-currentPower);
+          hasCollision = false;
         }
       }
-      hasCollision = false;
+      
     }
     if (!stopLeft) {
       if(((targetDistance - currentLeftFrontPosition) > 0.2)) {
@@ -285,4 +296,20 @@ void rotateDegree(long nr) {
   breakAllEngines();
   delay(100);  
   go(0,0);
+}
+
+bool isInterrupted() {
+  return hasCollision;
+}
+
+void resetInterrupt() {
+  hasCollision = false;
+}
+
+float* getCurrentDistances() {  
+  distances[0] = currentLeftFrontPosition;
+  distances[1] = currentRightFrontPosition;
+  distances[2] = currentLeftBackPosition;
+  distances[3] = currentRightBackPosition;
+  return distances;
 }

@@ -1,6 +1,7 @@
 /*
  * Stage 2 - LCD operations
- * Copyright 2022 Gabriel Dimitriu
+ * 
+ * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
 
@@ -25,17 +26,14 @@
 #include <Arduino.h>
 
 /**********************************************
- * define this to have LCD test
  * 
- **********************************************/
-#define LCD_TEST
-/**********************************************
  * initialize the LCD
  * 
  **********************************************/
 extern void initLCD();
 
 /**********************************************
+ * 
  * print the text with fontsize
  * return true if had space on LCD otherwise false
  * 
@@ -43,17 +41,29 @@ extern void initLCD();
 extern bool printNextLineText(char *text,uint8_t fontSize);
 
 /**********************************************
+ * 
  * reset the line position
  * 
  **********************************************/
 extern void resetLinePos();
 
 /**********************************************
+ * 
  * print the current file path
  * the file path contains the commands to the
  * moving engines processor
  * 
  **********************************************/
 extern void printCurrentFilePath(char *filePath);
+
+/**********************************************************************
+ *
+ * standalone tests enabled by TEST_LCD flag
+ *
+ **********************************************************************/
+#ifdef TEST_LCD
+  extern void printInSetupLcdTest();
+  extern void printInLoopLcdTest();
+#endif
 
 #endif

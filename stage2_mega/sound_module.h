@@ -1,7 +1,9 @@
 /*
- * Stage 2 - arms controller
+ * Stage 2 - SD card operation
  * 
- * Copyright 2023 Gabriel Dimitriu
+ * This is used only for LCD and other operations not for Sound Module.
+ * 
+ * Copyright 2023 Gabriel Dimitriu* 
  *
  * This file is part of waiterHomeRobot project.
 
@@ -18,39 +20,18 @@
  * You should have received a copy of the GNU General Public License
  * along with waiterHomeRobot; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
-*/ 
+*/
 
-#ifndef __ARMS_CONTROLLER_H__
-#define __ARMS_CONTROLLER_H__
-#include <Arduino.h>
+#ifndef __SOUND_MODULE_H__
+#define __SOUND_MODULE_H__
+
 #include "configuration.h"
 
 /**********************************************
  * 
- * initialize the arms controller
+ * initialize the sound module
  * 
  **********************************************/
-extern void initArmsController();
-
-/**********************************************
- * 
- * attach arms controller
- * 
- **********************************************/
-extern void attachServos();
-
-/**********************************************
- * 
- * detach arms controller
- * 
- **********************************************/
-extern void detachServos();
-
-/**********************************************
- * 
- * move both arms slow with payload horizontally
- * 
- **********************************************/
-extern bool moveBothHorizontally(uint8_t target);
+extern void initSoundModule();
 
 #endif

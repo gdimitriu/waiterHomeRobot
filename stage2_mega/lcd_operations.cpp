@@ -1,5 +1,6 @@
 /*
  * Stage 2 - LCD operations
+ * 
  * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
@@ -81,3 +82,38 @@ void printCurrentFilePath(char *filePath) {
   ucg.setPrintDir(0);
   ucg.print(filePath);
 }
+
+/**********************************************************************
+ *
+ * standalone tests enabled by TEST_LCD flag
+ *
+ **********************************************************************/
+#ifdef TEST_LCD
+
+  void printInSetupLcdTest() {
+    printCurrentFilePath("route 1");
+    printNextLineText("line 1",24);
+    printNextLineText("line 2",24);
+    printNextLineText("line 3",24);
+    printCurrentFilePath("route 02");
+    printNextLineText("line 4",24);  
+  }
+
+  void printInLoopLcdTest() {
+    delay(5000);
+    char buffer[50];
+    memset(buffer,0,sizeof(char)*50);
+    resetLinePos();
+    for(int i = 0; i < 7; i++) {
+      memset(buffer,0,sizeof(char)*50);
+      sprintf(buffer,"line %d",i);
+      printNextLineText(buffer,24);
+    }
+    for(int i = 0; i < 1000; i++) {
+      memset(buffer,0,sizeof(char)*50);
+      sprintf(buffer,"route %d",i);
+      printCurrentFilePath(buffer);
+      delay(1000);    
+    }
+  }
+#endif

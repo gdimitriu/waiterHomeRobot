@@ -1,6 +1,9 @@
 /*
  * Stage 2 - SD card operation
- * Copyright 2022 Gabriel Dimitriu
+ * 
+ * This is used only for LCD and other operations not for Sound Module.
+ * 
+ * Copyright 2023 Gabriel Dimitriu* 
  *
  * This file is part of waiterHomeRobot project.
 
@@ -25,32 +28,47 @@
 #include "configuration.h"
 
 /**********************************************
+ * 
  * initialize the SD Card Reader
  * 
  **********************************************/
 extern void initSDCardReader();
 
 /**********************************************
+ * 
  * open the file which should be 8.3
  * 
  **********************************************/
 extern bool openFile(char *fileName);
 
 /**********************************************
+ * 
  * close file
  * 
  **********************************************/
 extern void closeFile();
 
 /**********************************************
+ * 
  * read next line from the opened file
  * 
  **********************************************/
 extern char* readNextLine();
 
 /**********************************************
+ * 
  * read full
  * 
  **********************************************/
 extern void readFullFile(char *buffer, unsigned int size);
+
+/**********************************************************************
+ *
+ * standalone tests enabled by TEST_SD_LCD flag
+ *
+ **********************************************************************/
+#ifdef TEST_SD_LCD
+  extern void printInSetupSdLcdTest();
+#endif
+
 #endif

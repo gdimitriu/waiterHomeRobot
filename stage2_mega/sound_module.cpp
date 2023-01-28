@@ -1,7 +1,9 @@
 /*
- * Stage 2 main entry point.
+ * Stage 2 - sound module
  * 
- * Copyright 2023 Gabriel Dimitriu
+ * This use the SD card to make sound (play messages)
+ * 
+ * Copyright 2023 Gabriel Dimitriu* 
  *
  * This file is part of waiterHomeRobot project.
 
@@ -20,27 +22,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#include "communication.h"
-#include "lcd_operations.h"
-#include "sd_operations.h"
 #include "sound_module.h"
 
-void setup() {
-  initCommunications();
-  initLCD();
-  initSDCardReader();
-  initSoundModule();
-#ifdef TEST_LCD
-  printInSetupLcdTest();
-#endif
-#ifdef TEST_SD_LCD
-  printInSetupSdLcdTest();
-#endif
-}
+#include <TMRpcm.h>
 
-void loop() {
-  //receiveCommand();
-#ifdef TEST_LCD
-  printInLoopLcdTest();
-#endif
+static TMRpcm tmrpcm;
+
+void initSoundModule() {
+  
 }

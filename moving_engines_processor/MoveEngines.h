@@ -21,78 +21,95 @@
 
 #ifndef __MOVEENGINES_H__ 
 #define __MOVEENGINES_H__ 
+
 /**********************************************
  * move linear with distance
  * 
  **********************************************/
- 
-void moveLinear(float distance);
+extern void moveLinear(float distance);
 /**********************************************
  * rotate the platform with degree
  * negative values are for left
  * positive values are for right
  * 
  **********************************************/
-void rotateDegree(long nr);
+extern void rotateDegree(long nr);
 
 /**********************************************
  * move all engines with left and right speed
  * 
  **********************************************/
-void go(int speedLeft, int speedRight);
+extern void go(int speedLeft, int speedRight);
 
 /**********************************************
  * break all engines
  * 
  **********************************************/
-void breakAllEngines();
+extern void breakAllEngines();
 
 /**********************************************
  * reset encoder counters
  * 
  **********************************************/
-void resetCounters();
+extern void resetCounters();
 
 /**********************************************
  * return the left front encoder count
  * 
  **********************************************/
-uint16_t getLeftFrontEncoderCount();
+extern uint16_t getLeftFrontEncoderCount();
 
 /**********************************************
  * return the right front encoder count
  * 
  **********************************************/
-uint16_t getRightFrontEncoderCount();
+extern uint16_t getRightFrontEncoderCount();
 
 /**********************************************
  * return the left back encoder count
  * 
  **********************************************/
-uint16_t getLeftBackEncoderCount();
+extern uint16_t getLeftBackEncoderCount();
 
 /**********************************************
  * return the right back encoder count
  * 
  **********************************************/
-uint16_t getRightBackEncoderCount();
+extern uint16_t getRightBackEncoderCount();
 
 /**********************************************
  * enable encoders for move with distance
  * 
  **********************************************/
-void enableEncoders();
+extern void enableEncoders();
 
 /**********************************************
  * disable encoders
  * 
  **********************************************/
-void disableEncoders();
+extern void disableEncoders();
 
 /**********************************************
  * setup engines, encoders and sensors
  * 
  **********************************************/
-void engineSetup();
+extern void engineSetup();
 
+/**********************************************
+ * is interrupted by sensors
+ * 
+ **********************************************/
+extern bool isInterrupted();
+
+/**********************************************
+ * reset interrupt
+ * 
+ **********************************************/
+extern void resetInterrupt();
+
+/**********************************************
+ * get the current distances
+ * 
+ **********************************************/
+extern float* getCurrentDistances();
 #endif

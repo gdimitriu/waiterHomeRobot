@@ -1,6 +1,9 @@
 /*
  * Stage 2 - SD card operations
- * Copyright 2022 Gabriel Dimitriu
+ * 
+ * This is used only for LCD and other operations not for Sound Module.
+ * 
+ * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
 
@@ -21,6 +24,7 @@
 
 #include <SD.h>
 #include "sd_operations.h"
+#include "lcd_operations.h"
 #define LINE_SIZE 256
 
 static bool alreadyBegan = false;  // SD.begin() misbehaves if not first call
@@ -52,8 +56,8 @@ bool openFile(char *fileName) {
   if (fd) {
     fd.close();
   }
-  SD.open(fileName);
-  if (fd || !SD.exists(fileName)) {
+  fd = SD.open(fileName);
+  if (!fd || !SD.exists(fileName)) {
     return false;
   }
   return true;
@@ -80,6 +84,7 @@ char* readNextLine() {
       lineBuffer[index] = '\0';
     }
   }
+  return NULL;
 }
 
 void readFullFile(char *buffer, unsigned int size) {
@@ -94,3 +99,22 @@ void readFullFile(char *buffer, unsigned int size) {
     buffer[index] = '\0';
   }
 }
+
+#ifdef TEST_SD_LCD  
+  void printInSetupSdLcdTest() {
+    Serial.begin(38400);
+    char fileName[] = "tests/sd_lcd.txt";
+    printCurrentFilePath(fileName);
+    if(openFile("tests/sd_lcd.txt")) {
+      char * line = readNextLine();    
+      while(line != NULL) {
+        printNextLineText(line,24);
+        Serial.println(line);
+        line = readNextLine();
+      }
+      closeFile();
+    } else {
+      Serial.println("File does not exist");
+    }
+  }
+#endif
