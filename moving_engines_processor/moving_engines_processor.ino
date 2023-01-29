@@ -22,18 +22,12 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-#include <Adafruit_PWMServoDriver.h>
 #include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
 #include "rfid.h"
 #include "ColissionSensors.h"
 
-Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(0x40);
-
-int maxPower = ABSOLUTE_MAX_POWER;
-int currentPower = maxPower;
-int minPower = 2000;
 // for input data from ble
 boolean cleanupSerial;
 bool isValidInput;
@@ -46,12 +40,7 @@ NeoSWSerial BTSerial(RxD, TxD);
 void setup()
 {
     //enable serial
-    BTSerial.begin(38400);     
-    //init the PWM driver
-    pwmDriver.begin(PCA9685_ADDRESS);
-    pwmDriver.setOscillatorFrequency(27000000);
-    pwmDriver.setPWMFreq(50.0);
-    Wire.setClock(400000);
+    BTSerial.begin(38400);
     SPI.begin(); // Init SPI bus
     isValidInput = false;
     cleanupSerial = false;

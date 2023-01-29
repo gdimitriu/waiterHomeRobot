@@ -44,7 +44,7 @@
  * Address of the PCA9685 PWM expander
  * 
  **********************************************/
-#define PCA9685_ADDRESS 0x7f
+#define PCA9685_ADDRESS 0x40
 
 /**********************************************
  * 

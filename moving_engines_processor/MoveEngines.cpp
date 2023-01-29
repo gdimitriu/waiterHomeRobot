@@ -52,6 +52,12 @@ bool encoderEnabled = false;
 
 static float distances[4];
 
+int maxPower = ABSOLUTE_MAX_POWER;
+int currentPower = maxPower;
+int minPower = 2000;
+
+static Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(PCA9685_ADDRESS);
+
 void neoSSerial1ISR()
 {
     NeoSWSerial::rxISR(*portInputRegister(digitalPinToPort(RxD)));
@@ -109,6 +115,11 @@ static void detectColissionIsr(void) {
 }
 
 void engineSetup() {
+  //init the PWM driver
+  pwmDriver.begin();
+  pwmDriver.setOscillatorFrequency(27000000);
+  pwmDriver.setPWMFreq(50.0);
+  Wire.setClock(400000);
   PPI_front_left = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
   PPI_front_right = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);
   PPI_back_left = ENCODER_WHEEL_STEPS/(2*PI*WHEEL_RADIUS);

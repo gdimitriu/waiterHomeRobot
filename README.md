@@ -17,11 +17,21 @@ Connect the I2C Bus.
 
 Upload utils/detectI2Cdevices on arduino nano and should see something like:
 
+00:24:34.569 -> Scanning...
+
+00:24:34.569 -> I2C device found at address 0x21 !
+
+00:24:34.602 -> I2C device found at address 0x40 !
+
+00:24:34.636 -> I2C device found at address 0x70 !
+
+00:24:34.671 -> done
+
 Put the values on moving_engines_processor/configuration:
 
 PCF8574_ADDRESS is the address of PCF8574 ussually 0x20 or something else deppending on 3button switch.
 
-PCA9685_ADDRESS is the address of PCA9685 default is 0x7f.
+PCA9685_ADDRESS is the address of PCA9685 default is 0x40.
 
 ### Second stage
 
