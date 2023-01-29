@@ -65,7 +65,7 @@ Upload the 2stage_mega to arduino mega 2560.
 
 The LCD should show the information:
 
-in green box sould be test/s_lcd.txt and following lines:
+in green box sould be test/sd_lcd.txt and following lines:
 
 serving first dish get plates
 
