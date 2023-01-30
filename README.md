@@ -5,6 +5,8 @@ Waiter robot for home like omnibot2000
 
 ### Moving Engine Processor
 
+![moving_engines_processor](docs/logical_connections_moving_engines.jpeg)
+
 #### POWER AN CONNECTION OF SENSORS
 
 Connect all VCC and GND from Encoders, IR sensors, PCF8574 and  PCA9685.
@@ -33,6 +35,10 @@ PCF8574_ADDRESS is the address of PCF8574 ussually 0x20 or something else deppen
 
 PCA9685_ADDRESS is the address of PCA9685 default is 0x40.
 
+Connect the engines and two MX1508 to power supply and to the PCA9685.
+
+Upload the utils/4engines_calibrations and using serial and using f# for forward, b# for backward and s# to stop engines check if the platform is moving accordingly.
+
 ### Second stage
 
 #### LCD TEST
@@ -48,6 +54,7 @@ The LCD should show the information:
 - at statup green box should show route 01 and 3 lines.
 
 - in green box sould be route and incresing value and 7 lines which are not changing.
+
 
 #### SD AND LCD TESTS
 
