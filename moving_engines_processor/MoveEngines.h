@@ -129,4 +129,12 @@ extern void resetInterrupt();
  **********************************************/
 extern float* getCurrentDistances();
 
+/**********************************************
+ * 
+ * move the platform using M command util stop
+ * or sensors are triggered.
+ * 
+ **********************************************/
+extern void moveOrRotateUntilStop(int movingData, int rotateData);
+
 #endif

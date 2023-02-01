@@ -26,14 +26,18 @@
 #include "sound_module.h"
 
 void setup() {
+#ifdef TEST_SD_LCD
+  Serial.begin(38400);
+#endif
   initCommunications();
   initLCD();
-  initSDCardReader();
-  initSoundModule();
 #ifdef TEST_LCD
   printInSetupLcdTest();
 #endif
+  initSDCardReader();
+  initSoundModule();
 #ifdef TEST_SD_LCD
+  Serial.begin(38400);
   printInSetupSdLcdTest();
 #endif
 }

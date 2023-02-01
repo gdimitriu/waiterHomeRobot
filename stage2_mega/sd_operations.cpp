@@ -32,11 +32,19 @@ static char lineBuffer[LINE_SIZE];
 static File fd;
 
 void initSDCardReader() {
+#ifdef TEST_SD_LCD  
+  Serial.println("InitSD");
+#endif
   pinMode(CARD_DETECT_SD, INPUT);
   // Is there even a card?
-  if (!digitalRead(CARD_DETECT_SD))
-  {
-    while (!digitalRead(CARD_DETECT_SD));
+  if (!digitalRead(CARD_DETECT_SD)) {
+    resetLinePos();
+    while (!digitalRead(CARD_DETECT_SD)) {
+      Serial.println("enter card");
+      printNextLineText("Enter card",24);
+      delay(1000);
+    }
+    resetLinePos();
     delay(250); // 'Debounce insertion'
   }
   
@@ -44,6 +52,9 @@ void initSDCardReader() {
   // even if it worked if it's not the first call.
   if (!SD.begin(CHIP_SELECT_SD) && !alreadyBegan)  // begin uses half-speed...
   {
+    if(SD.begin(CHIP_SELECT_SD)) {
+      Serial.println("fail");
+    }
     initSDCardReader(); // Possible infinite retry loop is as valid as anything
   }
   else
@@ -101,12 +112,14 @@ void readFullFile(char *buffer, unsigned int size) {
 }
 
 #ifdef TEST_SD_LCD  
-  void printInSetupSdLcdTest() {
-    Serial.begin(38400);
+  void printInSetupSdLcdTest() {    
     char fileName[] = "tests/sd_lcd.txt";
+    Serial.println("before");
     printCurrentFilePath(fileName);
+    Serial.println("after");
     if(openFile("tests/sd_lcd.txt")) {
-      char * line = readNextLine();    
+      char * line = readNextLine();
+      Serial.println(line);
       while(line != NULL) {
         printNextLineText(line,24);
         Serial.println(line);

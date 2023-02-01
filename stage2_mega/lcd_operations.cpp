@@ -36,7 +36,7 @@ void initLCD() {
   ucg.setColor(1, 60, 0, 40);
   ucg.setColor(2, 20, 0, 20);
   ucg.setColor(3, 60, 0, 0);
-  ucg.setRotate90();
+  ucg.setRotate270();
   currentPosition = BEGIN_CUSTOM_MESSAGES;
 }
 

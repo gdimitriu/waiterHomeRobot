@@ -56,6 +56,12 @@ int maxPower = ABSOLUTE_MAX_POWER;
 int currentPower = maxPower;
 int minPower = 2000;
 
+static bool isMovingByHuman = false;
+
+static bool isForwardMove = false;
+
+static bool sensorsReading[8];
+
 static Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(PCA9685_ADDRESS);
 
 void neoSSerial1ISR()
@@ -110,8 +116,44 @@ void enableEncoders() {
   resetCounters();
 }
 
+
+static void stopLeftEngines() {
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 4095);
+}
+
+static void stopRightEngines() {
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 4095);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, 4095);
+    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 4095);
+}
+
+void breakAllEngines() {
+    if (isMovingByHuman) {
+      isMovingByHuman = false;
+    }
+    stopLeftEngines();
+    stopRightEngines();
+}
+
 static void detectColissionIsr(void) {
   hasCollision = true;
+  if (isMovingByHuman) {
+    if (isForwardMove) {
+      //forward sensors are triggered
+      if (sensorsReading[0] == false && sensorsReading[1] == false && sensorsReading[2] == false) {
+        breakAllEngines();
+      }
+    } else if (!isForwardMove) {
+      //rear sensors are triggered
+      if (sensorsReading[4] == false) {
+        breakAllEngines();
+      }
+    }
+  }
 }
 
 void engineSetup() {
@@ -155,29 +197,6 @@ uint16_t getRightBackEncoderCount() {
   return right_back_encoder_count;
 }
 
-void stopLeftEngines() {
-    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 4095);
-    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 4095);
-}
-
-void stopRightEngines() {
-    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 4095);
-    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 4095);
-}
-void breakAllEngines() {
-    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 4095);
-    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, 4095);
-    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, 4095);
-    pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, maxPower);    
-    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, maxPower);
-    pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, maxPower);
-}
 /*
 * Move the platform in predefined directions.
 */
@@ -220,6 +239,34 @@ void go(int speedLeft, int speedRight) {
   }
 }
 
+void moveOrRotateUntilStop(int moveData, int rotateData) {
+  //stop command (coasting)
+  if (moveData == 0 && rotateData == 0) {
+    go(0,0);
+    isMovingByHuman = false;
+    return;
+  }
+  isMovingByHuman = true;
+  bool *sensors = readSensors();
+  memcpy(sensorsReading, sensors, sizeof(bool)*8);
+  if (rotateData == 0) {    
+    if (moveData < 0) {
+      if (sensors[4] == false) {
+        go(-currentPower,-currentPower);
+      }
+    } else {
+      if (sensors[0] == false && sensors[1] == false && sensors[2] == false) {
+        go(currentPower, currentPower);
+      }
+    }
+  } else {
+    if (rotateData < 0) {
+      go(-currentPower,currentPower);
+    } else {
+      go(currentPower, -currentPower);
+    }
+  }
+}
 
 void moveLinear(float distance) {
   float targetDistance = distance;

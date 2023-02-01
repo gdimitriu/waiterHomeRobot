@@ -185,21 +185,7 @@ bool moveOrRotateUntilNextCommand() {
     idx++;
   }
   int rotateData = atoi(buf);
-  if (moveData == 0 && rotateData == 0) {
-    go(0,0);
-  } else if (rotateData == 0) {
-    if (moveData < 0) {
-      go(-currentPower,-currentPower);
-    } else {
-      go(currentPower, currentPower);
-    }
-  } else {
-    if (rotateData < 0) {
-      go(-currentPower,currentPower);
-    } else {
-      go(currentPower, -currentPower);
-    }
-  }
+  moveOrRotateUntilStop(moveData, rotateData);
   makeCleanup();
   isValidInput = true;
   return true;
