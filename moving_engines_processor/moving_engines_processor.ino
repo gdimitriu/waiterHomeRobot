@@ -26,7 +26,7 @@
 #include "configuration.h"
 #include "MoveEngines.h"
 #include "rfid.h"
-#include "ColissionSensors.h"
+#include "CollisionSensors.h"
 
 // for input data from ble
 boolean cleanupSerial;
@@ -48,9 +48,7 @@ void setup()
 #ifdef HAS_RFID    
     initRFID();
 #endif
-#ifdef HAS_COLISSIONS_SENSORS    
-    initColissionSensors();
-#endif
+    initCollisionSensors();
 }
 
 boolean isValidNumber(char *data, int size)
@@ -341,6 +339,7 @@ void loop()
     return;
   }
 #endif
+  checkCollisionIfHuman();
   while(BTSerial.available() > 0) // Don't read unless there you know there is data
   {
      if(index < 19) // One less than the size of the array

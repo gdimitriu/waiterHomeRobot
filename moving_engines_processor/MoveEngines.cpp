@@ -25,7 +25,7 @@
 #include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
-#include "ColissionSensors.h"
+#include "CollisionSensors.h"
 
 extern Adafruit_PWMServoDriver pwmDriver; 
 
@@ -56,16 +56,15 @@ int maxPower = ABSOLUTE_MAX_POWER;
 int currentPower = maxPower;
 int minPower = 2000;
 
-static bool isMovingByHuman = false;
+static volatile bool isMovingByHuman = false;
 
-static bool isForwardMove = false;
+static volatile bool isForwardMove = false;
 
-static bool sensorsReading[8];
+static volatile uint8_t sensorsReading;
 
 static Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(PCA9685_ADDRESS);
 
-void neoSSerial1ISR()
-{
+void neoSSerial1ISR() {
     NeoSWSerial::rxISR(*portInputRegister(digitalPinToPort(RxD)));
 }
 
@@ -139,17 +138,21 @@ void breakAllEngines() {
     stopRightEngines();
 }
 
-static void detectColissionIsr(void) {
+static void detectCollisionIsr(void) {
   hasCollision = true;
-  if (isMovingByHuman) {
-    if (isForwardMove) {
+}
+
+void checkCollisionIfHuman() {
+  if ( isMovingByHuman && hasCollision ) {
+    uint8_t  sensors = readSensors();
+    if ( isForwardMove ) {
       //forward sensors are triggered
-      if (sensorsReading[0] == false && sensorsReading[1] == false && sensorsReading[2] == false) {
+      if ( isFrontLeftCollision(sensors) == true || isFrontCenterCollision(sensors) == true || isFrontRightCollision(sensors) == true ) {
         breakAllEngines();
       }
-    } else if (!isForwardMove) {
+    } else {
       //rear sensors are triggered
-      if (sensorsReading[4] == false) {
+      if ( isRearCenterCollision(sensors) == true ) {
         breakAllEngines();
       }
     }
@@ -173,10 +176,8 @@ void engineSetup() {
   pinMode(RIGHT_BACK_ENCODER_PIN, INPUT_PULLUP);
   encoderEnabled = false;
   //enable interrupt sensors
-#ifdef HAS_COLLISION_SENSORS  
-    pinMode(COLISSION_INTERRUPT_PIN, INPUT_PULLUP);
-    enableInterrupt(COLISSION_INTERRUPT_PIN, detectColissionIsr, FALLING);
-#endif
+  pinMode(COLLISION_INTERRUPT_PIN, INPUT_PULLUP);
+  enableInterrupt(COLLISION_INTERRUPT_PIN, detectCollisionIsr, FALLING);
   //enable communication ... all enable interrupt should be in same cpp file
   enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
 }
@@ -202,7 +203,7 @@ uint16_t getRightBackEncoderCount() {
 */
 void go(int speedLeft, int speedRight) {
 
-  if (speedLeft == 0 && speedRight == 0 ) {
+  if ( speedLeft == 0 && speedRight == 0 ) {
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 0);
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 0);
     pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, 0);
@@ -213,7 +214,7 @@ void go(int speedLeft, int speedRight) {
     pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN2, 0, 0);
     return;
   }
-  if (speedLeft > 0) {
+  if ( speedLeft > 0 ) {
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, speedLeft);
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN2, 0, 0);
     pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN1, 0, speedLeft);
@@ -226,7 +227,7 @@ void go(int speedLeft, int speedRight) {
     pwmDriver.setPWM(LEFT_BACK_MOTOR_PIN2, 0, -speedLeft);    
   }
  
-  if (speedRight > 0) {
+  if ( speedRight > 0 ) {
     pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN1, 0, speedRight);
     pwmDriver.setPWM(RIGHT_FRONT_MOTOR_PIN2, 0, 0);    
     pwmDriver.setPWM(RIGHT_BACK_MOTOR_PIN1, 0, speedRight);
@@ -247,21 +248,23 @@ void moveOrRotateUntilStop(int moveData, int rotateData) {
     return;
   }
   isMovingByHuman = true;
-  bool *sensors = readSensors();
-  memcpy(sensorsReading, sensors, sizeof(bool)*8);
+  uint8_t  sensors = readSensors();
+  sensorsReading = sensors;
   if (rotateData == 0) {    
     if (moveData < 0) {
-      if (sensors[4] == false) {
+      if (isRearCenterCollision(sensors) == false) {
+        isForwardMove = false;
         go(-currentPower,-currentPower);
       }
-    } else {
-      if (sensors[0] == false && sensors[1] == false && sensors[2] == false) {
+    } else {      
+      if (isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false) {
+        isForwardMove = true;
         go(currentPower, currentPower);
       }
     }
   } else {
     if (rotateData < 0) {
-      go(-currentPower,currentPower);
+      go(-currentPower, currentPower);
     } else {
       go(currentPower, -currentPower);
     }
@@ -276,10 +279,25 @@ void moveLinear(float distance) {
   currentRightBackPosition = 0.0f;
 
   if (targetDistance > 0) {
-    go(currentPower,currentPower);
+    if (hasCollision == true) {
+      uint8_t sensors = readSensors();
+      if (isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false) {
+        go(currentPower,currentPower);
+      }
+    } else {
+      go(currentPower,currentPower);
+    }
   } else if (targetDistance < 0) {
-    go(-currentPower,-currentPower);
-    targetDistance = -targetDistance;
+    if (hasCollision == true) {
+      uint8_t sensors = readSensors();
+      if (isRearCenterCollision(sensors) == false) {
+        go(-currentPower,-currentPower);
+        targetDistance = -targetDistance;
+      }
+    } else {
+      go(-currentPower,-currentPower);
+      targetDistance = -targetDistance;
+    }
   } else {
     return;
   }
@@ -288,8 +306,8 @@ void moveLinear(float distance) {
   while(!stopLeft || !stopRight){
     if (hasCollision == true) {
       breakAllEngines();
-      bool *sensors = readSensors();
-      if (sensors[0] == true || sensors[1] == true || sensors[2] == true) {
+      uint8_t sensors = readSensors();
+      if (isFrontLeftCollision(sensors) == true || isFrontCenterCollision(sensors) == true || isFrontRightCollision(sensors) == true) {
         //front sensors detect object
         if (distance < 0) { //resume
           go(-currentPower,-currentPower);
@@ -298,7 +316,7 @@ void moveLinear(float distance) {
           stopLeft = true;
           stopRight = true;
         }
-      } else if (sensors[4] == true || sensors[3] == true || sensors[5] == true) {
+      } else if (isRearCenterCollision(sensors) == true) {
         //rear sensors detect object
         if (distance < 0) { //resume
           go(currentPower,currentPower);

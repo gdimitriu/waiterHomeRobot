@@ -50,7 +50,7 @@ void setup() {
   expander.pinMode(1, INPUT_PULLUP); //center front sensor
   expander.pinMode(2, INPUT_PULLUP); //right front sensor
   expander.pinMode(4, INPUT_PULLUP); //rear sensor
-  collision = new bool[8];
+  collision = new bool[8];  
   pinMode(COLISSION_INTERRUPT_PIN, INPUT_PULLUP);
   enableInterrupt(COLISSION_INTERRUPT_PIN, detectColissionIsr, FALLING);
 }
@@ -92,7 +92,7 @@ void loop() {
   readSensors();
   Serial.print("front left=");Serial.println(collision[0]);
   Serial.print("front center=");Serial.println(collision[1]);
-  Serial.print("front rifht=");Serial.println(collision[2]);
+  Serial.print("front right=");Serial.println(collision[2]);
   Serial.print("rear center=");Serial.println(collision[4]);
   hasCollision = false;
 }

@@ -21,7 +21,7 @@
 
 #include <Wire.h>
 #include <PCF8574.h>
-#include "ColissionSensors.h"
+#include "CollisionSensors.h"
 #include "configuration.h"
 #define FRONT_LEFT_MASK 0b00000001
 #define FRONT_CENTER_MASK 0b00000010
@@ -37,43 +37,42 @@ bool hasCollision = false;
 
 static PCF8574 expander;
 
-static bool *collision;
-
-void initColissionSensors(void) {
+void initCollisionSensors(void) {
   expander.begin(PCF8574_ADDRESS);
   expander.pinMode(0, INPUT_PULLUP); //left front sensor
   expander.pinMode(1, INPUT_PULLUP); //center front sensor
   expander.pinMode(2, INPUT_PULLUP); //right front sensor
   expander.pinMode(4, INPUT_PULLUP); //rear sensor
-  collision = new bool[8];
 }
 
-bool* readSensors() {
-  
-  uint8_t sensors = expander.read();
-  if (( sensors & FRONT_LEFT_MASK) > 0) {
-    collision[0] = false;
-  } else {
-    collision[0] = true;
+uint8_t readSensors() {  
+  return expander.read();
+}
+
+bool isFrontLeftCollision(uint8_t sensors) {
+  if (( sensors & FRONT_LEFT_MASK ) > 0) {
+    return false;
   }
-  if (( sensors & FRONT_CENTER_MASK) > 0) {
-    collision[1] = false;
-  } else {
-    collision[1] = true;
+  return true;
+}
+
+bool isFrontCenterCollision(uint8_t sensors) {
+  if (( sensors & FRONT_CENTER_MASK ) > 0) {
+    return false;
   }
-  if (( sensors & FRONT_RIGHT_MASK) > 0) {
-    collision[2] = false;
-  } else {
-    collision[2] = true;
+  return true;
+}
+
+bool isFrontRightCollision(uint8_t sensors) {
+  if (( sensors & FRONT_RIGHT_MASK ) > 0) {
+    return false;
   }
-  if (( sensors & REAR_CENTER_MASK) > 0) {
-    collision[4] = false;
-  } else {
-    collision[4] = true;
+  return true;
+}
+
+bool isRearCenterCollision(uint8_t sensors) {
+  if (( sensors & REAR_CENTER_MASK ) > 0) {
+    return false;
   }
-  collision[3] = false;
-  for (int i = 5; i < 8; i++) {
-    collision[i] = false;
-  }
-  return collision;
+  return true;
 }

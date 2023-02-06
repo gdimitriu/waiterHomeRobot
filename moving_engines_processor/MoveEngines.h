@@ -137,4 +137,12 @@ extern float* getCurrentDistances();
  **********************************************/
 extern void moveOrRotateUntilStop(int movingData, int rotateData);
 
+/**********************************************
+ * 
+ * check if had collision if human is in controll
+ * if is collision break all engines
+ * 
+ **********************************************/
+extern void checkCollisionIfHuman();
+
 #endif

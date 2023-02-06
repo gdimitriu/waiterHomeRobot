@@ -1,5 +1,5 @@
 /*
- * Moving engines processor - Colission Sensors module
+ * Moving engines processor - Collision Sensors module
  * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
@@ -18,15 +18,47 @@
  * along with waiterHomeRobot; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
-#ifndef __COLISSION_SENSORS_H__
-#define __COLISSION_SENSORS_H__
+#ifndef __COLLISION_SENSORS_H__
+#define __COLLISION_SENSORS_H__
 
 /**********************************************
  * 
  * init the sensors
  * 
  **********************************************/
-extern void initColissionSensors(void);
+extern void initCollisionSensors(void);
+
+/**********************************************
+ * 
+ * has collision on front left sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isFrontLeftCollision(uint8_t sensors);
+
+/**********************************************
+ * 
+ * has collision on front center sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isFrontCenterCollision(uint8_t sensors);
+
+/**********************************************
+ * 
+ * has collision on front right sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isFrontRightCollision(uint8_t sensors);
+
+/**********************************************
+ * 
+ * has collision on rear center sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isRearCenterCollision(uint8_t sensors);
 
 /**********************************************
  * 
@@ -41,5 +73,5 @@ extern void initColissionSensors(void);
  * 7 not used
  * 
  **********************************************/
-extern bool* readSensors();
+extern uint8_t readSensors();
 #endif

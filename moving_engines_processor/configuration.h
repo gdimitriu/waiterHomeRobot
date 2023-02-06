@@ -95,7 +95,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN1 14
+#define LEFT_FRONT_MOTOR_PIN1 0
 
 /**********************************************
  * 
@@ -103,23 +103,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN2 15
-
-/**********************************************
- * 
- * right front motor pin 1
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN1 13
-
-/**********************************************
- * 
- * right front motor pin 2
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN2 12
+#define LEFT_FRONT_MOTOR_PIN2 1
 
 /**********************************************
  * 
@@ -127,7 +111,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_BACK_MOTOR_PIN1 0
+#define LEFT_BACK_MOTOR_PIN1 2
 
 /**********************************************
  * 
@@ -135,7 +119,23 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_BACK_MOTOR_PIN2 1
+#define LEFT_BACK_MOTOR_PIN2 3
+
+/**********************************************
+ * 
+ * right front motor pin 1
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+#define RIGHT_FRONT_MOTOR_PIN1 14
+
+/**********************************************
+ * 
+ * right front motor pin 2
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+#define RIGHT_FRONT_MOTOR_PIN2 15
 
 /**********************************************
  * 
@@ -143,7 +143,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define RIGHT_BACK_MOTOR_PIN1 2
+#define RIGHT_BACK_MOTOR_PIN1 12
 
 /**********************************************
  * 
@@ -151,7 +151,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
- #define RIGHT_BACK_MOTOR_PIN2 3
+ #define RIGHT_BACK_MOTOR_PIN2 13
 
 /**********************************************
  * 
@@ -204,7 +204,7 @@
  * if has rfid MFRC522
  *  
  **********************************************/
-#define HAS_RFID
+//#define HAS_RFID
 
 /**********************************************
  * 
@@ -215,17 +215,10 @@
 
 /**********************************************
  * 
- * if has colission sensors
+ * interrupt pin for  collision sensors
  *  
  **********************************************/
-#define HAS_COLISSIONS_SENSORS
-
-/**********************************************
- * 
- * interrupt pin for  colission sensors
- *  
- **********************************************/
-#define COLISSION_INTERRUPT_PIN 6
+#define COLLISION_INTERRUPT_PIN 6
 
 
 
