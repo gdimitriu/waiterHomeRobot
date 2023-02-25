@@ -25,7 +25,6 @@
 #include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
-#include "rfid.h"
 #include "CollisionSensors.h"
 
 // for input data from ble
@@ -45,9 +44,6 @@ void setup()
     isValidInput = false;
     cleanupSerial = false;
     engineSetup();
-#ifdef HAS_RFID    
-    initRFID();
-#endif
     initCollisionSensors();
 }
 
@@ -329,16 +325,6 @@ bool makeMove() {
 
 void loop()
 {
-#ifdef HAS_RFID
-  if (isCardPresent()) {
-    breakAllEngines();
-    uint8_t readed;
-    readRFID(inData, readed);
-    BTSerial.write(inData);
-    makeMove();
-    return;
-  }
-#endif
   checkCollisionIfHuman();
   while(BTSerial.available() > 0) // Don't read unless there you know there is data
   {

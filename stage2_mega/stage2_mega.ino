@@ -24,6 +24,7 @@
 #include "lcd_operations.h"
 #include "sd_operations.h"
 #include "sound_module.h"
+#include "rfid.h"
 
 void setup() {
 #ifdef TEST_SD_LCD
@@ -34,11 +35,18 @@ void setup() {
 #ifdef TEST_LCD
   printInSetupLcdTest();
 #endif
+#ifdef HAS_SD
   initSDCardReader();
+#endif
+#ifdef HAS_RFID
+  initRFID();
+#endif
   initSoundModule();
-#ifdef TEST_SD_LCD
-  Serial.begin(38400);
+
+#ifdef HAS_SD
+#ifdef TEST_SD_LCD  
   printInSetupSdLcdTest();
+#endif
 #endif
 }
 

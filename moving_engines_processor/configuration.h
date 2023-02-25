@@ -95,7 +95,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN1 0
+#define LEFT_FRONT_MOTOR_PIN1 15
 
 /**********************************************
  * 
@@ -103,7 +103,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN2 1
+#define LEFT_FRONT_MOTOR_PIN2 14
 
 /**********************************************
  * 
@@ -111,7 +111,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_BACK_MOTOR_PIN1 2
+#define LEFT_BACK_MOTOR_PIN1 13
 
 /**********************************************
  * 
@@ -119,7 +119,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_BACK_MOTOR_PIN2 3
+#define LEFT_BACK_MOTOR_PIN2 12
 
 /**********************************************
  * 
@@ -127,7 +127,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN1 14
+#define RIGHT_FRONT_MOTOR_PIN1 0
 
 /**********************************************
  * 
@@ -135,15 +135,15 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN2 15
+#define RIGHT_FRONT_MOTOR_PIN2 1
 
 /**********************************************
  * 
  * right back motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
- **********************************************/
-#define RIGHT_BACK_MOTOR_PIN1 12
+ ******************************   ****************/
+#define RIGHT_BACK_MOTOR_PIN1 2
 
 /**********************************************
  * 
@@ -151,7 +151,7 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
- #define RIGHT_BACK_MOTOR_PIN2 13
+ #define RIGHT_BACK_MOTOR_PIN2 3
 
 /**********************************************
  * 
@@ -198,20 +198,6 @@
  * 
  **********************************************/
 #define ENCODER_WHEEL_STEPS 20
-
-/**********************************************
- * 
- * if has rfid MFRC522
- *  
- **********************************************/
-//#define HAS_RFID
-
-/**********************************************
- * 
- * ss pin for rfid
- *  
- **********************************************/
-#define SS_RFID_PIN 10
 
 /**********************************************
  * 
