@@ -4,6 +4,7 @@
 #define SERVO_PIN 9
 Servo servo;
 
+#define SENSOR_PIN 4
 #define LOWER_SWITCH 5
 #define UPPER_SWITCH 6
 
@@ -26,13 +27,24 @@ void lowerDirStopServo() {
   Serial.print("Lower trigger ");Serial.print(digitalRead(LOWER_SWITCH));
 }
 
+void sensorTriggered() {
+  if ( switchTriggered == -1 ) {
+     servo.attach(SERVO_PIN);
+     servo.write(180);
+     switchTriggered = 0;
+     Serial.print("Sensor trigger ");
+  }
+}
+
 void setup() {
   Serial.begin(9600);
   switchTriggered = 0;
   pinMode(LOWER_SWITCH, INPUT_PULLUP);
   pinMode(UPPER_SWITCH, INPUT_PULLUP);
+  pinMode(SENSOR_PIN, INPUT_PULLUP);
   enableInterrupt(LOWER_SWITCH, lowerDirStopServo, FALLING);
   enableInterrupt(UPPER_SWITCH, upperDirStopServo, FALLING);
+  enableInterrupt(SENSOR_PIN, sensorTriggered, FALLING);
 }
 
 static void makeCleanup() {
