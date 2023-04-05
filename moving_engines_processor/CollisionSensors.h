@@ -54,6 +54,14 @@ extern bool isFrontRightCollision(uint8_t sensors);
 
 /**********************************************
  * 
+ * has collision on rear left sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isRearLeftCollision(uint8_t sensors);
+
+/**********************************************
+ * 
  * has collision on rear center sensor
  * return true if has collision otherwise false
  * 
@@ -62,13 +70,21 @@ extern bool isRearCenterCollision(uint8_t sensors);
 
 /**********************************************
  * 
+ * has collision on rear right sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isRearRightCollision(uint8_t sensors);
+
+/**********************************************
+ * 
  * read the values from sensors array of 8 sensors:
  * 0 is front left
  * 1 is front center
  * 2 is front right
- * 3 is rear left (not used now)
+ * 3 is rear left
  * 4 is rear center
- * 5 is rear right (not used now
+ * 5 is rear right
  * 6 not used
  * 7 not used
  * 

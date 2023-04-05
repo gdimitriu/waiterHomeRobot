@@ -26,7 +26,7 @@
 #define FRONT_LEFT_MASK 0b00000001
 #define FRONT_CENTER_MASK 0b00000010
 #define FRONT_RIGHT_MASK 0b00000100
-#define REART_LEFT_MASK 0b00001000
+#define REAR_LEFT_MASK 0b00001000
 #define REAR_CENTER_MASK 0b00010000
 #define REAR_RIGHT_MASK 0b00100000
 #define PIN6_MASK 0b01000000
@@ -72,6 +72,20 @@ bool isFrontRightCollision(uint8_t sensors) {
 
 bool isRearCenterCollision(uint8_t sensors) {
   if (( sensors & REAR_CENTER_MASK ) > 0) {
+    return false;
+  }
+  return true;
+}
+
+bool isRearLeftCollision(uint8_t sensors) {
+  if (( sensors & REAR_LEFT_MASK ) > 0) {
+    return false;
+  }
+  return true;
+}
+
+bool isRearRightCollision(uint8_t sensors) {
+  if (( sensors & REAR_RIGHT_MASK ) > 0) {
     return false;
   }
   return true;

@@ -152,7 +152,7 @@ void checkCollisionIfHuman() {
       }
     } else {
       //rear sensors are triggered
-      if ( isRearCenterCollision(sensors) == true ) {
+      if ( isRearLeftCollision(sensors) == true || isRearCenterCollision(sensors) == true ||  isRearRightCollision(sensors) == true) {
         breakAllEngines();
       }
     }
