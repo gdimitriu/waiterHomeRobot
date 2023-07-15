@@ -145,4 +145,18 @@ extern void moveOrRotateUntilStop(int movingData, int rotateData);
  **********************************************/
 extern void checkCollisionIfHuman();
 
+/**********************************************
+ * 
+ * raise RFID
+ * 
+ **********************************************/
+extern void raiseRFID();
+
+/**********************************************
+ * 
+ * lower RFID
+ * 
+ **********************************************/
+extern void lowerRFID();
+
 #endif

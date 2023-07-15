@@ -59,28 +59,28 @@
  * left front ecoder pin from arduino
  * 
  **********************************************/
-#define LEFT_FRONT_ENCODER_PIN 5
+#define LEFT_FRONT_ENCODER_PIN 2
 
 /**********************************************
  * 
  * right front ecoder pin from arduino
  * 
  **********************************************/
-#define RIGHT_FRONT_ENCODER_PIN 3
+#define RIGHT_FRONT_ENCODER_PIN 4
 
 /**********************************************
  * 
  * left back ecoder pin from arduino
  * 
  **********************************************/
-#define LEFT_BACK_ENCODER_PIN 4
+#define LEFT_BACK_ENCODER_PIN 3
 
 /**********************************************
  * 
  * right back ecoder pin from arduino
  * 
  **********************************************/
-#define RIGHT_BACK_ENCODER_PIN 2
+#define RIGHT_BACK_ENCODER_PIN 5
 
 /**********************************************
  * 
@@ -91,43 +91,19 @@
 
 /**********************************************
  * 
- * left front motor pin 1
+ * right back motor pin 2
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN1 15
+#define RIGHT_BACK_MOTOR_PIN2 15
 
 /**********************************************
  * 
- * left front motor pin  2
+ * right back motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define LEFT_FRONT_MOTOR_PIN2 14
-
-/**********************************************
- * 
- * left back motor pin 1
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define LEFT_BACK_MOTOR_PIN1 13
-
-/**********************************************
- * 
- * left back motor pin 2
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define LEFT_BACK_MOTOR_PIN2 12
-
-/**********************************************
- * 
- * right front motor pin 1
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN1 0
+#define RIGHT_BACK_MOTOR_PIN1 14
 
 /**********************************************
  * 
@@ -135,23 +111,47 @@
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define RIGHT_FRONT_MOTOR_PIN2 1
+#define RIGHT_FRONT_MOTOR_PIN2 13
 
 /**********************************************
  * 
- * right back motor pin 1
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- ******************************   ****************/
-#define RIGHT_BACK_MOTOR_PIN1 2
-
-/**********************************************
- * 
- * right back motor pin 2
+ * right front motor pin 1
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
- #define RIGHT_BACK_MOTOR_PIN2 3
+#define RIGHT_FRONT_MOTOR_PIN1 12
+
+/**********************************************
+ * 
+ * left back motor pin 2
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+#define LEFT_BACK_MOTOR_PIN2 0
+
+/**********************************************
+ * 
+ * left back motor pin 1
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+#define LEFT_BACK_MOTOR_PIN1 1
+
+/**********************************************
+ * 
+ * left front motor pin 2
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+#define LEFT_FRONT_MOTOR_PIN2 2
+
+/**********************************************
+ * 
+ * left front motor pin 1
+ * this is the pin from Adafruit_PWMServoDriver. 
+ * 
+ **********************************************/
+ #define LEFT_FRONT_MOTOR_PIN1 3
 
 /**********************************************
  * 
@@ -201,12 +201,38 @@
 
 /**********************************************
  * 
- * interrupt pin for  collision sensors
+ * interrupt pin for collision sensors
  *  
  **********************************************/
 #define COLLISION_INTERRUPT_PIN 6
 
+/**********************************************
+ * 
+ * RFID servo
+ *  
+ **********************************************/
+#define RFID_SERVO_PIN 10
 
+/**********************************************
+ * 
+ * interrupt pin for RFID UP switch
+ *  
+ **********************************************/
+ #define RFID_UP_SWITCH_PIN 11
+
+/**********************************************
+ * 
+ * interrupt pin for RFID DOWN switch
+ *  
+ **********************************************/
+ #define RFID_DOWN_SWITCH_PIN 12
+
+/**********************************************
+ * 
+ * RFID servo
+ *  
+ **********************************************/
+#define RFID_SERVO_PIN 10
 
 /************************************************************************
  * 

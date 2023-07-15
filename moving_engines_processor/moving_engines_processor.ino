@@ -307,8 +307,27 @@ bool makeMove() {
           sprintf(buffer,"I%f,%f,%f,%f#", distances[0], distances[1], distances[2], distances[3]);
           BTSerial.print(buffer);
           BTSerial.flush();
-           resetInterrupt();
+          resetInterrupt();
         }       
+      } else if ( inData[0] == 'r' ) {
+        if ( inData[1] == 'u' ) {
+          raiseRFID();
+          sprintf(buffer,"OK\r\n");
+          BTSerial.print(buffer);
+          BTSerial.flush();
+        } else if ( inData[1] == 'l' ) {
+          lowerRFID();
+          sprintf(buffer,"OK\r\n");
+          BTSerial.print(buffer);
+          BTSerial.flush();
+        } else {
+          sprintf(buffer,"unsupported\r\n");
+          BTSerial.print(buffer);
+          BTSerial.flush();
+          makeCleanup();
+          isValidInput = false;
+          return false;
+        }
       } else {
         sprintf(buffer,"%d\r\n",0);
         BTSerial.print(buffer);

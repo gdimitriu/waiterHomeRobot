@@ -23,26 +23,26 @@
 #include <PCF8574.h>
 #include "CollisionSensors.h"
 #include "configuration.h"
-#define FRONT_LEFT_MASK 0b00000001
-#define FRONT_CENTER_MASK 0b00000010
-#define FRONT_RIGHT_MASK 0b00000100
-#define REAR_LEFT_MASK 0b00001000
-#define REAR_CENTER_MASK 0b00010000
-#define REAR_RIGHT_MASK 0b00100000
-#define PIN6_MASK 0b01000000
+#define REAR_RIGHT_MASK 0b00000001 //0
+#define REAR_CENTER_MASK 0b00000010 //1
+#define REAR_LEFT_MASK 0b00000100 //2
+#define FRONT_RIGHT_MASK 0b00001000 //3
+#define FRONT_CENTER_MASK 0b00010000 //4
+#define FRONT_LEFT_MASK 0b00100000 //5
+#define RFID_COLLISION_MASK 0b01000000 //6
 #define PIN7_MASK 0b10000000
-
-
-bool hasCollision = false;
 
 static PCF8574 expander;
 
 void initCollisionSensors(void) {
   expander.begin(PCF8574_ADDRESS);
-  expander.pinMode(0, INPUT_PULLUP); //left front sensor
-  expander.pinMode(1, INPUT_PULLUP); //center front sensor
-  expander.pinMode(2, INPUT_PULLUP); //right front sensor
-  expander.pinMode(4, INPUT_PULLUP); //rear sensor
+  expander.pinMode(0, INPUT_PULLUP); //right rear sensor
+  expander.pinMode(1, INPUT_PULLUP); //center rear sensor
+  expander.pinMode(2, INPUT_PULLUP); //left rear sensor
+  expander.pinMode(3, INPUT_PULLUP); //right front sensor
+  expander.pinMode(4, INPUT_PULLUP); //center front sensor
+  expander.pinMode(5, INPUT_PULLUP); //left front sensor
+  expander.pinMode(6, INPUT_PULLUP); //RFID Collision sensor
 }
 
 uint8_t readSensors() {  
@@ -86,6 +86,13 @@ bool isRearLeftCollision(uint8_t sensors) {
 
 bool isRearRightCollision(uint8_t sensors) {
   if (( sensors & REAR_RIGHT_MASK ) > 0) {
+    return false;
+  }
+  return true;
+}
+
+bool isRFIDCollision(uint8_t sensors) {
+  if (( sensors & RFID_COLLISION_MASK ) > 0) {
     return false;
   }
   return true;

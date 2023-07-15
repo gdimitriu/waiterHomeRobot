@@ -22,6 +22,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <EnableInterrupt.h>
+#include <Servo.h>
 #include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
@@ -61,6 +62,11 @@ static volatile bool isMovingByHuman = false;
 static volatile bool isForwardMove = false;
 
 static volatile uint8_t sensorsReading;
+
+//0 none -1 lower 1 upper
+static volatile int switchTriggered = 0;
+
+static Servo rfidServo;
 
 static Adafruit_PWMServoDriver pwmDriver = Adafruit_PWMServoDriver(PCA9685_ADDRESS);
 
@@ -115,6 +121,17 @@ void enableEncoders() {
   resetCounters();
 }
 
+// ISR for RFID Servo
+
+void upperDirStopServo() {
+  rfidServo.detach();
+  switchTriggered = 1;
+}
+
+void lowerDirStopServo() {
+  rfidServo.detach();
+  switchTriggered = -1;
+}
 
 static void stopLeftEngines() {
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 4095);
@@ -178,8 +195,20 @@ void engineSetup() {
   //enable interrupt sensors
   pinMode(COLLISION_INTERRUPT_PIN, INPUT_PULLUP);
   enableInterrupt(COLLISION_INTERRUPT_PIN, detectCollisionIsr, FALLING);
+  pinMode(RFID_UP_SWITCH_PIN, INPUT_PULLUP);
+  enableInterrupt(RFID_UP_SWITCH_PIN, upperDirStopServo, FALLING);
+  pinMode(RFID_DOWN_SWITCH_PIN, INPUT_PULLUP);
+  enableInterrupt(RFID_DOWN_SWITCH_PIN, lowerDirStopServo, FALLING);
   //enable communication ... all enable interrupt should be in same cpp file
   enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
+  if ( digitalRead(RFID_UP_SWITCH_PIN) == 0 ) {
+    switchTriggered = 1;
+  } else if ( digitalRead(RFID_DOWN_SWITCH_PIN) == 0 ) {
+    switchTriggered = -1;
+  } else {
+    switchTriggered = 0;
+    raiseRFID();
+  }
 }
 
 uint16_t getLeftFrontEncoderCount() {
@@ -252,12 +281,12 @@ void moveOrRotateUntilStop(int moveData, int rotateData) {
   sensorsReading = sensors;
   if (rotateData == 0) {    
     if (moveData < 0) {
-      if (isRearCenterCollision(sensors) == false) {
+      if ( isRearLeftCollision(sensors) == false && isRearCenterCollision(sensors) == false && isRearRightCollision(sensors) == false ) {
         isForwardMove = false;
         go(-currentPower,-currentPower);
       }
     } else {      
-      if (isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false) {
+      if ( isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false ) {
         isForwardMove = true;
         go(currentPower, currentPower);
       }
@@ -281,7 +310,7 @@ void moveLinear(float distance) {
   if (targetDistance > 0) {
     if (hasCollision == true) {
       uint8_t sensors = readSensors();
-      if (isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false) {
+      if ( isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false ) {
         go(currentPower,currentPower);
       }
     } else {
@@ -290,7 +319,7 @@ void moveLinear(float distance) {
   } else if (targetDistance < 0) {
     if (hasCollision == true) {
       uint8_t sensors = readSensors();
-      if (isRearCenterCollision(sensors) == false) {
+      if ( isRearLeftCollision(sensors) == false && isRearCenterCollision(sensors) == false && isRearRightCollision(sensors) == false ) {
         go(-currentPower,-currentPower);
         targetDistance = -targetDistance;
       }
@@ -303,49 +332,54 @@ void moveLinear(float distance) {
   }
   boolean stopLeft = false;
   boolean stopRight = false;
-  while(!stopLeft || !stopRight){
-    if (hasCollision == true) {
+  while( !stopLeft || !stopRight ){
+    if ( hasCollision ) {
       breakAllEngines();
       uint8_t sensors = readSensors();
-      if (isFrontLeftCollision(sensors) == true || isFrontCenterCollision(sensors) == true || isFrontRightCollision(sensors) == true) {
+      if ( isFrontLeftCollision( sensors ) || isFrontCenterCollision(sensors) || isFrontRightCollision(sensors) ) {
         //front sensors detect object
-        if (distance < 0) { //resume
-          go(-currentPower,-currentPower);
+        if ( distance < 0 ) { //resume
+          go( -currentPower,-currentPower );
           hasCollision = false;
         } else {
           stopLeft = true;
           stopRight = true;
         }
-      } else if (isRearCenterCollision(sensors) == true) {
+      } else if ( isRearCenterCollision(sensors) ) {
         //rear sensors detect object
-        if (distance < 0) { //resume
-          go(currentPower,currentPower);
+        if ( distance < 0 ) { //resume
+          go( currentPower,currentPower );
           hasCollision = false;
         } else {
           stopLeft = true;
           stopRight = true;
         }
+      } else if ( isRFIDCollision(sensors) ) {
+        raiseRFID();
+        while ( switchTriggered != 1 );
+        go( -currentPower,-currentPower );
+        hasCollision = false;
       } else {
-        if (distance > 0) {
-          go(currentPower,currentPower);
+        if ( distance > 0 ) {
+          go( currentPower,currentPower );
           hasCollision = false;
-        } else if (distance < 0) {
-          go(-currentPower,-currentPower);
+        } else if ( distance < 0 ) {
+          go( -currentPower,-currentPower );
           hasCollision = false;
         }
       }
       
     }
-    if (!stopLeft) {
-      if(((targetDistance - currentLeftFrontPosition) > 0.2)) {
+    if ( !stopLeft ) {
+      if( ( ( targetDistance - currentLeftFrontPosition ) > 0.2) ) {
          currentLeftFrontPosition = left_front_encoder_count/PPI_front_left;
       } else {
         stopLeftEngines();
         stopLeft = true;
       }
     }
-    if (!stopRight) {
-      if (((targetDistance - currentRightFrontPosition) > 0.2)) {
+    if ( !stopRight ) {
+      if ( ( ( targetDistance - currentRightFrontPosition ) > 0.2 ) ) {
         currentRightFrontPosition = right_front_encoder_count/PPI_front_right;
       } else {
         stopRightEngines();
@@ -388,4 +422,21 @@ float* getCurrentDistances() {
   distances[2] = currentLeftBackPosition;
   distances[3] = currentRightBackPosition;
   return distances;
+}
+
+
+void raiseRFID() {
+  if ( switchTriggered == -1 ) {
+     rfidServo.attach(RFID_SERVO_PIN);
+     rfidServo.write(180);
+     switchTriggered = 0;
+  }
+}
+
+void lowerRFID() {
+  if ( switchTriggered == 1 ) {
+     rfidServo.attach(RFID_SERVO_PIN);
+     rfidServo.write(0);
+     switchTriggered = 0;
+  }
 }

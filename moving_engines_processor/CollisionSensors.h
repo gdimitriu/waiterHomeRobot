@@ -78,6 +78,14 @@ extern bool isRearRightCollision(uint8_t sensors);
 
 /**********************************************
  * 
+ * has collision on RFID collision sensor
+ * return true if has collision otherwise false
+ * 
+ **********************************************/
+extern bool isRFIDCollision(uint8_t sensors);
+
+/**********************************************
+ * 
  * read the values from sensors array of 8 sensors:
  * 0 is front left
  * 1 is front center
@@ -85,7 +93,7 @@ extern bool isRearRightCollision(uint8_t sensors);
  * 3 is rear left
  * 4 is rear center
  * 5 is rear right
- * 6 not used
+ * 6 is RFID collision sensor
  * 7 not used
  * 
  **********************************************/
