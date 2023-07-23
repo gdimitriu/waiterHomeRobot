@@ -47,21 +47,21 @@ void setup()
     initCollisionSensors();
 }
 
-boolean isValidNumber(char *data, int size)
+boolean isValidNumber( char *data, int size )
 {
-  if (size == 0 ) return false;
+  if ( size == 0 ) return false;
    boolean isNum=false;
-   if(!(data[0] == '+' || data[0] == '-' || isDigit(data[0]))) return false;
+   if( !( data[0] == '+' || data[0] == '-' || isDigit(data[0]) ) ) return false;
 
-   for(byte i=1;i<size;i++)
+   for( byte i=1; i<size; i++ )
    {
-       if(!(isDigit(data[i]) || data[i] == '.')) return false;
+       if( !( isDigit(data[i]) || data[i] == '.' ) ) return false;
    }
    return true;
 }
 
 boolean makeCleanup() {
-  for (index = 0; index < SERIAL_BUFFER; index++) {
+  for ( index = 0; index < SERIAL_BUFFER; index++ ) {
     inData[index] = '\0';
   }
   index = 0;
@@ -77,15 +77,15 @@ void sendOK() {
 bool setMaxPowerCommand() {
   sendOK();
   //remove V from command
-  for (uint8_t i = 0 ; i < strlen(inData); i++) {
+  for ( uint8_t i = 0 ; i < strlen(inData); i++ ) {
     inData[i]=inData[i+1];
   }
-  if (!isValidNumber(inData, index - 2)) {
+  if ( !isValidNumber(inData, index - 2) ) {
     isValidInput = false;
     makeCleanup();
     return false;
   }
-  if (atol(inData) > ABSOLUTE_MAX_POWER || atol(inData) < 0) {
+  if ( atol(inData) > ABSOLUTE_MAX_POWER || atol(inData) < 0 ) {
     isValidInput = false;
     makeCleanup();
     return false;
@@ -99,15 +99,15 @@ bool setMaxPowerCommand() {
 bool setMinPowerCommand() {
   sendOK();
   //remove v from command
-  for (uint8_t i = 0 ; i < strlen(inData); i++) {
+  for ( uint8_t i = 0 ; i < strlen(inData); i++ ) {
     inData[i]=inData[i+1];
   }
-  if (!isValidNumber(inData, index - 2)) {
+  if ( !isValidNumber(inData, index - 2) ) {
     isValidInput = false;
     makeCleanup();
     return false;
   }
-  if (atol(inData) > maxPower || atol(inData) < 0) {
+  if ( atol(inData) > maxPower || atol(inData) < 0 ) {
     isValidInput = false;
     makeCleanup();
     return false;
@@ -121,15 +121,15 @@ bool setMinPowerCommand() {
 bool setCurrentPowerCommand() {
   sendOK();
   //remove c from command
-  for (uint8_t i = 0 ; i < strlen(inData); i++) {
+  for ( uint8_t i = 0 ; i < strlen(inData); i++ ) {
     inData[i]=inData[i+1];
   }
-  if (!isValidNumber(inData, index - 2)) {
+  if ( !isValidNumber(inData, index - 2) ) {
     isValidInput = false;
     makeCleanup();
     return false;
   }
-  if (atol(inData) > maxPower || atol(inData) < 0) {
+  if ( atol(inData) > maxPower || atol(inData) < 0 ) {
     isValidInput = false;
     makeCleanup();
     return false;
@@ -151,30 +151,30 @@ bool moveOrRotateUntilNextCommand() {
   resetInterrupt();
   disableEncoders();
   //remove M from command
-  for (uint8_t i = 0 ; i < strlen(inData); i++) {
+  for ( uint8_t i = 0 ; i < strlen(inData); i++ ) {
     inData[i]=inData[i+1];
   }
   inData[strlen(inData)] = '\0';
   int position;
-  for (uint8_t i = 0; i < strlen(inData); i++) {
-    if (inData[i] == ',') {
+  for ( uint8_t i = 0; i < strlen(inData); i++ ) {
+    if ( inData[i] == ',' ) {
       position = i;
       break;
     }
   }
   char buf[10];
-  for (int i = 0; i < 10; i++) {
+  for ( int i = 0; i < 10; i++ ) {
     buf[i] = '\0';
   }
-  for (int i = 0 ; i < position; i++) {
+  for ( int i = 0 ; i < position; i++ ) {
     buf[i] = inData[i];
   }
   int moveData = atoi(buf);
-  for (int i = 0; i < 10; i++) {
+  for ( int i = 0; i < 10; i++ ) {
     buf[i] = '\0';
   }
   int idx = 0;
-  for (int i = position + 1; i < strlen(inData); i++) {
+  for ( int i = position + 1; i < strlen(inData); i++ ) {
     buf[idx] = inData[i];
     idx++;
   }
@@ -188,37 +188,37 @@ bool moveOrRotateUntilNextCommand() {
 bool moveOrRoatateWithDistanceCommand() {
   enableEncoders();
   //remove m from command
-  for (uint8_t i = 0 ; i < strlen(inData); i++) {
+  for ( uint8_t i = 0 ; i < strlen(inData); i++ ) {
     inData[i]=inData[i+1];
   }
   inData[strlen(inData)] = '\0';
   int position;
-  for (uint8_t i = 0; i < strlen(inData); i++) {
-    if (inData[i] == ',') {
+  for ( uint8_t i = 0; i < strlen(inData); i++ ) {
+    if ( inData[i] == ',' ) {
       position = i;
       break;
     }
   }
   char buf[10];
-  for (int i = 0; i < 10; i++) {
+  for ( int i = 0; i < 10; i++ ) {
     buf[i] = '\0';
   }
-  for (int i = 0 ; i < position; i++) {
+  for ( int i = 0 ; i < position; i++ ) {
     buf[i] = inData[i];
   }
   int moveData = atoi(buf);
-  for (int i = 0; i < 10; i++) {
+  for ( int i = 0; i < 10; i++ ) {
     buf[i] = '\0';
   }
   int idx = 0;
-  for (int i = position + 1; i < strlen(inData); i++) {
+  for ( int i = position + 1; i < strlen(inData); i++ ) {
     buf[idx] = inData[i];
     idx++;
   }
   int rotateData = atoi(buf);
-  if (moveData == 0 && rotateData == 0) {
+  if ( moveData == 0 && rotateData == 0 ) {
     go(0,0);
-  } else if (rotateData == 0) {
+  } else if ( rotateData == 0 ) {
     moveLinear(moveData);
   } else {
     rotateDegree(rotateData);
@@ -230,47 +230,47 @@ bool moveOrRoatateWithDistanceCommand() {
 
 bool makeMove() {
   char buffer[SERIAL_BUFFER];
-  for (int i = 0; i < SERIAL_BUFFER; i++) {
+  for ( int i = 0; i < SERIAL_BUFFER; i++ ) {
     buffer[i] = '\0';
   }
-  if (index > 0) {
+  if ( index > 0 ) {
      inData[index-1] = '\0';
   }
-  if (strlen(inData) == 1) {
-    if (inData[0] == 'I') {
+  if ( strlen(inData) == 1 ) {
+    if ( inData[0] == 'I' ) {
       sprintf(buffer,"unsupported\r\n");
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] == 'V') {      
+    } else if ( inData[0] == 'V' ) {      
       sprintf(buffer,"%d\r\n",maxPower);
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] =='v') {
+    } else if ( inData[0] == 'v' ) {
       sprintf(buffer,"%d\r\n",minPower);
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] =='c') {
+    } else if ( inData[0] == 'c' ) {
       sprintf(buffer,"%d\r\n",currentPower);
       BTSerial.print(buffer);
       BTSerial.flush();
-    }  else if (inData[0] == 'd') {
+    }  else if ( inData[0] == 'd' ) {
       sprintf(buffer,"%d\r\n",0);
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] == 's') {
+    } else if ( inData[0] == 's' ) {
       sprintf(buffer,"%d\r\n",0);
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] == 'b') { 
+    } else if ( inData[0] == 'b' ) {  //break all engines
       breakAllEngines();
-    } else if (inData[0] == 'C') {
-      sprintf(buffer,"%d:%d:%d:%d\r\n",getLeftFrontEncoderCount(),getRightFrontEncoderCount(),getLeftBackEncoderCount(),getRightBackEncoderCount());
+    } else if ( inData[0] == 'C' ) { //get encoder values
+      sprintf(buffer,"%ld:%ld:%ld:%ld\r\n",getLeftFrontEncoderCount(),getRightFrontEncoderCount(),getLeftBackEncoderCount(),getRightBackEncoderCount());
       BTSerial.print(buffer);
       BTSerial.flush();
-    } else if (inData[0] == 'R') {
+    } else if (inData[0] == 'R') { //reset encoders
       enableEncoders();
 #ifdef SERIAL_DEBUG_MODE      
-      sprintf(buffer,"%d:%d:%d:%d\r\n",getLeftFrontEncoderCount(),getRightFrontEncoderCount(),getLeftBackEncoderCount(),getRightBackEncoderCount());
+      sprintf(buffer,"%ld:%ld:%ld:%ld\r\n",getLeftFrontEncoderCount(),getRightFrontEncoderCount(),getLeftBackEncoderCount(),getRightBackEncoderCount());
 #else
       sprintf(buffer,"%d\r\n",0);
 #endif      
@@ -286,23 +286,24 @@ bool makeMove() {
       return false;
     }
   } else {
-      if (inData[0] == 'V') {
+      if ( inData[0] == 'V' ) {
         return setMaxPowerCommand();
-      } else if (inData[0] == 'v') {
+      } else if ( inData[0] == 'v' ) {
         return setMinPowerCommand();
-      } else if (inData[0] == 'c') {
+      } else if ( inData[0] == 'c' ) {
         return  setCurrentPowerCommand();
-      } else if (inData[0] == 'd') {
+      } else if ( inData[0] == 'd' ) {
         //this does not support low power distance
         return processPlatformUnsupportedCommand();
-      } else if (inData[0] == 's') {
+      } else if ( inData[0] == 's' ) {
         //this does not support stop distance
         return processPlatformUnsupportedCommand();
-      } else if (inData[0] == 'M') {
+      } else if ( inData[0] == 'M' ) {
         return moveOrRotateUntilNextCommand();
-      } else if (inData[0] == 'm') {
+      } else if ( inData[0] == 'm' ) { //move or rotate with distance
+        resetInterrupt();
         bool moving = moveOrRoatateWithDistanceCommand();
-        if (isInterrupted()) {
+        if ( isInterrupted() ) {
           float *distances = getCurrentDistances();
           sprintf(buffer,"I%f,%f,%f,%f#", distances[0], distances[1], distances[2], distances[3]);
           BTSerial.print(buffer);
@@ -318,6 +319,10 @@ bool makeMove() {
         } else if ( inData[1] == 'l' ) {
           lowerRFID();
           sprintf(buffer,"OK\r\n");
+          BTSerial.print(buffer);
+          BTSerial.flush();
+        } else if ( inData[1] == 'p' ) {
+          sprintf(buffer,"%d\r\n", rfidPosition());
           BTSerial.print(buffer);
           BTSerial.flush();
         } else {
@@ -345,21 +350,21 @@ bool makeMove() {
 void loop()
 {
   checkCollisionIfHuman();
-  while(BTSerial.available() > 0) // Don't read unless there you know there is data
+  while( BTSerial.available() > 0 ) // Don't read unless there you know there is data
   {
      if(index < 19) // One less than the size of the array
      {
         inChar = BTSerial.read(); // Read a character
-        if (inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122) {
+        if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {
           continue;
         }
         //commands start with a letter capital or small
-        if (index == 0 && !((inChar >64 && inChar <91) || (inChar > 96 && inChar<123))) {
+        if ( index == 0 && !( ( inChar >64 && inChar <91 ) || ( inChar > 96 && inChar<123 ) ) ) {
           continue;
         }    
         inData[index++] = inChar; // Store it
         inData[index] = '\0'; // Null terminate the string
-        if (inChar == '#') {
+        if ( inChar == '#' ) {
           break;
         }
      } else {
@@ -367,10 +372,10 @@ void loop()
         cleanupSerial = true;
      }
  }
- if (index >= 1) {
-  if (inData[index - 1] == '#') {
+ if ( index >= 1 ) {
+  if ( inData[index - 1] == '#' ) {
     makeMove();
-  } else if (cleanupSerial) {
+  } else if ( cleanupSerial ) {
     makeCleanup();
     cleanupSerial = false;
   } else {

@@ -1,6 +1,7 @@
 /*
- * Moving engines processor - Move engines with encoder and sensors
- * Copyright 2022 Gabriel Dimitriu
+ * Stage 2 - configuration
+ * 
+ * Copyright 2023 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
 
@@ -19,153 +20,156 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#ifndef __MOVEENGINES_H__ 
-#define __MOVEENGINES_H__ 
+#ifndef __CONFIGURATION_H__
+#define __CONFIGURATION_H__
+/**********************************************************************
+ *
+ * Flags to activate standalone tests for components
+ *
+ **********************************************************************/
+/**********************************************
+ * 
+ * uncomment this to have LCD test
+ * 
+ **********************************************/
+#define TEST_LCD
+
+/*********************************************
+ * 
+ * uncomment this to have read from SD and
+ * print on LCD test
+ * data are into tests/sd_lcd.txt
+ * 
+ *********************************************/
+//#define TEST_SD_LCD
+
+/*********************************************************************
+ * 
+ * Real Functionality
+ * 
+ *********************************************************************/
+/**********************************************
+ * DC from ILI9341 pin
+ * 
+ **********************************************/
+#define DC_LCD 23
+
+/**********************************************
+ * RESET from ILI9341 pin
+ * 
+ **********************************************/
+#define RST_LCD 22
+
+/**********************************************
+ * CS from ILI9341 pin
+ * unused on my board because it does not have it
+ * choose something that is not used
+ **********************************************/
+#define CS_LCD 26
 
 /**********************************************
  * 
- * move linear with distance
- * 
+ * if has rfid SD CARD READER
+ *  
  **********************************************/
-extern void moveLinear(float distance);
+//#define HAS_SD
 
 /**********************************************
  * 
- * rotate the platform with degree
- * negative values are for left
- * positive values are for right
+ * CS from SD board pin
  * 
  **********************************************/
-extern void rotateDegree(long nr);
+#define CHIP_SELECT_SD 25
 
 /**********************************************
  * 
- * move all engines with left and right speed
+ * CD from SD board pin
  * 
  **********************************************/
-extern void go(int speedLeft, int speedRight);
+#define CARD_DETECT_SD 24
 
 /**********************************************
  * 
- * break all engines
+ * left arm shoulder pin
  * 
  **********************************************/
-extern void breakAllEngines();
+#define LEFT_ARM_SHOULDER 2
 
 /**********************************************
  * 
- * reset encoder counters
+ * left arm elbow pin
  * 
  **********************************************/
-extern void resetCounters();
+#define LEFT_ARM_ELBOW 3
 
 /**********************************************
  * 
- * return the left front encoder count
+ * left arm wrist pin
  * 
  **********************************************/
-extern uint32_t getLeftFrontEncoderCount();
+#define LEFT_ARM_WRIST 4
 
 /**********************************************
  * 
- * return the right front encoder count
+ * left arm gripper pin
  * 
  **********************************************/
-extern uint32_t getRightFrontEncoderCount();
+#define LEFT_ARM_GRIPPER 5
 
 /**********************************************
  * 
- * return the left back encoder count
+ * right arm shoulder pin
  * 
  **********************************************/
-extern uint32_t getLeftBackEncoderCount();
+#define RIGHT_ARM_SHOULDER 6
 
 /**********************************************
  * 
- * return the right back encoder count
+ * right arm elbow pin
  * 
  **********************************************/
-extern uint32_t getRightBackEncoderCount();
+#define RIGHT_ARM_ELBOW 7
 
 /**********************************************
  * 
- * enable encoders for move with distance
+ * right arm wrist pin
  * 
  **********************************************/
-extern void enableEncoders();
+#define RIGHT_ARM_WRIST 8
 
 /**********************************************
  * 
- * disable encoders
+ * right arm gripper pin
  * 
  **********************************************/
-extern void disableEncoders();
+#define RIGHT_ARM_GRIPPER 9
 
 /**********************************************
  * 
- * setup engines, encoders and sensors
+ * arms servo relay pin
  * 
  **********************************************/
-extern void engineSetup();
+#define RELAY_ARMS_PIN 36
 
 /**********************************************
  * 
- * is interrupted by sensors
+ * Speaker PIN
  * 
  **********************************************/
-extern bool isInterrupted();
+#define LEFT_SPEAKER_PIN 10
 
 /**********************************************
  * 
- * reset interrupt
- * 
+ * if has rfid MFRC522
+ *  
  **********************************************/
-extern void resetInterrupt();
+//#define HAS_RFID
 
 /**********************************************
  * 
- * get the current distances
- * 
+ * ss pin for rfid
+ *  
  **********************************************/
-extern float* getCurrentDistances();
-
-/**********************************************
- * 
- * move the platform using M command util stop
- * or sensors are triggered.
- * 
- **********************************************/
-extern void moveOrRotateUntilStop(int movingData, int rotateData);
-
-/**********************************************
- * 
- * check if had collision if human is in controll
- * if is collision break all engines
- * 
- **********************************************/
-extern void checkCollisionIfHuman();
-
-/**********************************************
- * 
- * raise RFID
- * 
- **********************************************/
-extern void raiseRFID();
-
-/**********************************************
- * 
- * lower RFID
- * 
- **********************************************/
-extern void lowerRFID();
-
-/**********************************************
- * 
- * read RFID position
- * return -1 for lower, 1 for upper, 0 unkown
- * 
- **********************************************/
-extern int rfidPosition();
-
+#define SS_RFID_PIN 27
 
 #endif

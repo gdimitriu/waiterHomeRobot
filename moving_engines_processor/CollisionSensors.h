@@ -26,7 +26,7 @@
  * init the sensors
  * 
  **********************************************/
-extern void initCollisionSensors(void);
+extern void initCollisionSensors();
 
 /**********************************************
  * 

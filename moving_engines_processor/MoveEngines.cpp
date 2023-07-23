@@ -36,10 +36,10 @@ extern Adafruit_PWMServoDriver pwmDriver;
  **********************************************/
 static volatile bool hasCollision = false;
 
-static volatile uint16_t  left_front_encoder_count = 0;
-static volatile uint16_t  right_front_encoder_count = 0;
-static volatile uint16_t  left_back_encoder_count = 0;
-static volatile uint16_t  right_back_encoder_count = 0;
+static volatile uint32_t  left_front_encoder_count = 0;
+static volatile uint32_t  right_front_encoder_count = 0;
+static volatile uint32_t  left_back_encoder_count = 0;
+static volatile uint32_t  right_back_encoder_count = 0;
 
 static float PPI_front_left;
 static float PPI_front_right;
@@ -101,7 +101,7 @@ void resetCounters() {
 }
 
 void disableEncoders() {
-  if (!encoderEnabled)
+  if ( !encoderEnabled )
     return;
   disableInterrupt(LEFT_FRONT_ENCODER_PIN);
   disableInterrupt(RIGHT_FRONT_ENCODER_PIN);
@@ -111,7 +111,7 @@ void disableEncoders() {
 }
 
 void enableEncoders() {
-  if (encoderEnabled)
+  if ( encoderEnabled )
     return;
   enableInterrupt(LEFT_FRONT_ENCODER_PIN, isrLeftFrontEncoder, RISING);
   enableInterrupt(RIGHT_FRONT_ENCODER_PIN, isrRightFrontEncoder, RISING);
@@ -123,13 +123,11 @@ void enableEncoders() {
 
 // ISR for RFID Servo
 
-void upperDirStopServo() {
-  rfidServo.detach();
+static void upperDirStopServo() {
   switchTriggered = 1;
 }
 
-void lowerDirStopServo() {
-  rfidServo.detach();
+static void lowerDirStopServo() {
   switchTriggered = -1;
 }
 
@@ -148,14 +146,14 @@ static void stopRightEngines() {
 }
 
 void breakAllEngines() {
-    if (isMovingByHuman) {
+    if ( isMovingByHuman ) {
       isMovingByHuman = false;
     }
     stopLeftEngines();
     stopRightEngines();
 }
 
-static void detectCollisionIsr(void) {
+static void detectCollisionIsr() {
   hasCollision = true;
 }
 
@@ -201,36 +199,29 @@ void engineSetup() {
   enableInterrupt(RFID_DOWN_SWITCH_PIN, lowerDirStopServo, FALLING);
   //enable communication ... all enable interrupt should be in same cpp file
   enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
-  if ( digitalRead(RFID_UP_SWITCH_PIN) == 0 ) {
-    switchTriggered = 1;
-  } else if ( digitalRead(RFID_DOWN_SWITCH_PIN) == 0 ) {
-    switchTriggered = -1;
-  } else {
-    switchTriggered = 0;
-    raiseRFID();
-  }
+  //raiseRFID();
 }
 
-uint16_t getLeftFrontEncoderCount() {
+uint32_t getLeftFrontEncoderCount() {
   return left_front_encoder_count;
 }
 
-uint16_t getRightFrontEncoderCount() {
+uint32_t getRightFrontEncoderCount() {
   return right_front_encoder_count;
 }
 
-uint16_t getLeftBackEncoderCount() {
+uint32_t getLeftBackEncoderCount() {
   return left_back_encoder_count;
 }
 
-uint16_t getRightBackEncoderCount() {
+uint32_t getRightBackEncoderCount() {
   return right_back_encoder_count;
 }
 
 /*
 * Move the platform in predefined directions.
 */
-void go(int speedLeft, int speedRight) {
+void go( int speedLeft, int speedRight ) {
 
   if ( speedLeft == 0 && speedRight == 0 ) {
     pwmDriver.setPWM(LEFT_FRONT_MOTOR_PIN1, 0, 0);
@@ -269,9 +260,9 @@ void go(int speedLeft, int speedRight) {
   }
 }
 
-void moveOrRotateUntilStop(int moveData, int rotateData) {
+void moveOrRotateUntilStop( int moveData, int rotateData ) {
   //stop command (coasting)
-  if (moveData == 0 && rotateData == 0) {
+  if ( moveData == 0 && rotateData == 0 ) {
     go(0,0);
     isMovingByHuman = false;
     return;
@@ -279,8 +270,8 @@ void moveOrRotateUntilStop(int moveData, int rotateData) {
   isMovingByHuman = true;
   uint8_t  sensors = readSensors();
   sensorsReading = sensors;
-  if (rotateData == 0) {    
-    if (moveData < 0) {
+  if ( rotateData == 0 ) {    
+    if ( moveData < 0 ) {
       if ( isRearLeftCollision(sensors) == false && isRearCenterCollision(sensors) == false && isRearRightCollision(sensors) == false ) {
         isForwardMove = false;
         go(-currentPower,-currentPower);
@@ -292,7 +283,7 @@ void moveOrRotateUntilStop(int moveData, int rotateData) {
       }
     }
   } else {
-    if (rotateData < 0) {
+    if ( rotateData < 0 ) {
       go(-currentPower, currentPower);
     } else {
       go(currentPower, -currentPower);
@@ -300,15 +291,15 @@ void moveOrRotateUntilStop(int moveData, int rotateData) {
   }
 }
 
-void moveLinear(float distance) {
+void moveLinear( float distance ) {
   float targetDistance = distance;
   currentLeftFrontPosition = 0.0f;
   currentRightFrontPosition = 0.0f;
   currentLeftBackPosition = 0.0f;
   currentRightBackPosition = 0.0f;
 
-  if (targetDistance > 0) {
-    if (hasCollision == true) {
+  if ( targetDistance > 0 ) {
+    if ( hasCollision ) {
       uint8_t sensors = readSensors();
       if ( isFrontLeftCollision(sensors) == false && isFrontCenterCollision(sensors) == false && isFrontRightCollision(sensors) == false ) {
         go(currentPower,currentPower);
@@ -316,7 +307,7 @@ void moveLinear(float distance) {
     } else {
       go(currentPower,currentPower);
     }
-  } else if (targetDistance < 0) {
+  } else if ( targetDistance < 0 ) {
     if (hasCollision == true) {
       uint8_t sensors = readSensors();
       if ( isRearLeftCollision(sensors) == false && isRearCenterCollision(sensors) == false && isRearRightCollision(sensors) == false ) {
@@ -339,26 +330,29 @@ void moveLinear(float distance) {
       if ( isFrontLeftCollision( sensors ) || isFrontCenterCollision(sensors) || isFrontRightCollision(sensors) ) {
         //front sensors detect object
         if ( distance < 0 ) { //resume
-          go( -currentPower,-currentPower );
           hasCollision = false;
+          go( -currentPower,-currentPower );
         } else {
           stopLeft = true;
           stopRight = true;
         }
-      } else if ( isRearCenterCollision(sensors) ) {
+      } else if ( isRearLeftCollision(sensors) || isRearCenterCollision(sensors) || isRearRightCollision(sensors) ) {
         //rear sensors detect object
-        if ( distance < 0 ) { //resume
-          go( currentPower,currentPower );
+        if ( distance > 0 ) { //resume
           hasCollision = false;
+          go( currentPower,currentPower );          
         } else {
           stopLeft = true;
           stopRight = true;
         }
       } else if ( isRFIDCollision(sensors) ) {
         raiseRFID();
-        while ( switchTriggered != 1 );
-        go( -currentPower,-currentPower );
+        while ( switchTriggered != 1 ); //wait to raise the RFID
         hasCollision = false;
+        if ( distance > 0 )
+          go( currentPower,currentPower );
+        else if ( distance < 0 ) //should be trigger only forward
+          go( -currentPower,-currentPower );
       } else {
         if ( distance > 0 ) {
           go( currentPower,currentPower );
@@ -371,16 +365,16 @@ void moveLinear(float distance) {
       
     }
     if ( !stopLeft ) {
-      if( ( ( targetDistance - currentLeftFrontPosition ) > 0.2) ) {
-         currentLeftFrontPosition = left_front_encoder_count/PPI_front_left;
+      if( ( ( targetDistance - currentLeftBackPosition ) > 0.2) ) {
+         currentLeftBackPosition = left_back_encoder_count/PPI_front_left;
       } else {
         stopLeftEngines();
         stopLeft = true;
       }
     }
     if ( !stopRight ) {
-      if ( ( ( targetDistance - currentRightFrontPosition ) > 0.2 ) ) {
-        currentRightFrontPosition = right_front_encoder_count/PPI_front_right;
+      if ( ( ( targetDistance - currentRightBackPosition ) > 0.2 ) ) {
+        currentRightBackPosition = right_back_encoder_count/PPI_front_right;
       } else {
         stopRightEngines();
         stopRight=true;
@@ -392,16 +386,43 @@ void moveLinear(float distance) {
   go(0,0);
 }
 
-void rotateDegree(long nr) {
+uint32_t ceiling( float value ) {
+  uint32_t iVal = value;
+  if ( (value - iVal) < 0.5 ) {
+    return iVal;
+  }
+  return iVal++;
+}
+
+void rotateDegree( long nr ) {
   if (nr < 0) {
     go(-currentPower,currentPower);
     nr = -nr;
-    while(left_front_encoder_count < COUNT_ROTATE_INNER * nr && right_front_encoder_count < COUNT_ROTATE_OUTER * nr && hasCollision == false);
   } else if (nr > 0) {
     go(currentPower,-currentPower);
-    while(left_front_encoder_count < COUNT_ROTATE_OUTER * nr && right_front_encoder_count < COUNT_ROTATE_INNER * nr && hasCollision == false);
   } else {
     return;
+  }
+  boolean stopLeft = false;
+  boolean stopRight = false;
+  uint32_t current = ceiling((COUNT_ROTATE_90/90.0f) * nr);
+  while( !stopLeft || !stopRight ){
+    if ( !hasCollision ) {
+      if ( !stopLeft ) {
+        if ( left_back_encoder_count >= current ) {
+           stopLeftEngines();
+           stopLeft = true;
+        }
+      }
+      if ( !stopRight )  {
+        if ( right_back_encoder_count >= current ) {
+          stopRightEngines();
+          stopRight = true;
+        } 
+      }
+    } else {
+      break;
+    }
   }
   breakAllEngines();
   delay(100);  
@@ -426,17 +447,48 @@ float* getCurrentDistances() {
 
 
 void raiseRFID() {
-  if ( switchTriggered == -1 ) {
+  if ( digitalRead(RFID_DOWN_SWITCH_PIN) == LOW ) {
+     switchTriggered = 0;
      rfidServo.attach(RFID_SERVO_PIN);
      rfidServo.write(180);
-     switchTriggered = 0;
+  } else {
+    if ( digitalRead(RFID_DOWN_SWITCH_PIN) == HIGH && digitalRead(RFID_UP_SWITCH_PIN) == HIGH ) { // in the middle
+      switchTriggered = 0;
+      rfidServo.attach(RFID_SERVO_PIN);
+      rfidServo.write(180);
+    }
   }
+  while ( switchTriggered != 1 );
+  rfidServo.detach();
 }
 
 void lowerRFID() {
-  if ( switchTriggered == 1 ) {
+  if ( digitalRead(RFID_UP_SWITCH_PIN) == LOW ) {
+     switchTriggered = 0;
      rfidServo.attach(RFID_SERVO_PIN);
      rfidServo.write(0);
-     switchTriggered = 0;
+  } else {
+    if ( digitalRead(RFID_DOWN_SWITCH_PIN) == HIGH && digitalRead(RFID_UP_SWITCH_PIN) == HIGH ) { // in the middle
+      switchTriggered = 0;
+      rfidServo.attach(RFID_SERVO_PIN);
+      rfidServo.write(0);
+    }
+  }
+  while ( switchTriggered != -1 );
+  rfidServo.detach();
+}
+
+int rfidPosition() {
+  if ( digitalRead(RFID_DOWN_SWITCH_PIN) == HIGH && digitalRead(RFID_UP_SWITCH_PIN) == HIGH ) { //middle
+    return 2;
+  }
+  if ( digitalRead(RFID_DOWN_SWITCH_PIN) == LOW && digitalRead(RFID_UP_SWITCH_PIN) == LOW ) { //impossible
+    return -2;
+  }
+  if ( digitalRead(RFID_UP_SWITCH_PIN) == LOW ) {
+    return 1;
+  }
+  if ( digitalRead(RFID_DOWN_SWITCH_PIN) == LOW ) {
+    return -1;
   }
 }

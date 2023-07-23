@@ -66,14 +66,14 @@
  * right front ecoder pin from arduino
  * 
  **********************************************/
-#define RIGHT_FRONT_ENCODER_PIN 4
+#define RIGHT_FRONT_ENCODER_PIN 3
 
 /**********************************************
  * 
  * left back ecoder pin from arduino
  * 
  **********************************************/
-#define LEFT_BACK_ENCODER_PIN 3
+#define LEFT_BACK_ENCODER_PIN 4
 
 /**********************************************
  * 
@@ -155,42 +155,18 @@
 
 /**********************************************
  * 
- * nr of counter to rotate 90 left
+ * nr of counter to rotate 90
  * this is the pin from Adafruit_PWMServoDriver. 
  * 
  **********************************************/
-#define COUNT_ROTATE_90_LEFT 1
-
-/**********************************************
- * 
- * nr of counter to rotate 90 right
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define COUNT_ROTATE_90_RIGHT 1
-
-/**********************************************
- * 
- * nr of counter to rotate inner wheel
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define COUNT_ROTATE_INNER 1
-
-/**********************************************
- * 
- * nr of counter to rotate outer wheel
- * this is the pin from Adafruit_PWMServoDriver. 
- * 
- **********************************************/
-#define COUNT_ROTATE_OUTER 1
+#define COUNT_ROTATE_90 20.0f
 
 /**********************************************
  * 
  * wheel radius in cm
  * 
  **********************************************/
-#define WHEEL_RADIUS 7.5f
+#define WHEEL_RADIUS 8.5f
 
 /**********************************************
  * 
@@ -226,13 +202,6 @@
  *  
  **********************************************/
  #define RFID_DOWN_SWITCH_PIN 12
-
-/**********************************************
- * 
- * RFID servo
- *  
- **********************************************/
-#define RFID_SERVO_PIN 10
 
 /************************************************************************
  * 

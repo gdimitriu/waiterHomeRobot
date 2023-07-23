@@ -34,7 +34,7 @@
 
 static PCF8574 expander;
 
-void initCollisionSensors(void) {
+void initCollisionSensors() {
   expander.begin(PCF8574_ADDRESS);
   expander.pinMode(0, INPUT_PULLUP); //right rear sensor
   expander.pinMode(1, INPUT_PULLUP); //center rear sensor
