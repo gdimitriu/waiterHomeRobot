@@ -350,9 +350,9 @@ bool makeMove() {
 void loop()
 {
   checkCollisionIfHuman();
-  while( BTSerial.available() > 0 ) // Don't read unless there you know there is data
+  while ( BTSerial.available() > 0 ) // Don't read unless there you know there is data
   {
-     if(index < 19) // One less than the size of the array
+     if ( index < (SERIAL_BUFFER - 1) ) // One less than the size of the array
      {
         inChar = BTSerial.read(); // Read a character
         if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {

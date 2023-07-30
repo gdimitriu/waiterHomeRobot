@@ -199,7 +199,7 @@ void engineSetup() {
   enableInterrupt(RFID_DOWN_SWITCH_PIN, lowerDirStopServo, FALLING);
   //enable communication ... all enable interrupt should be in same cpp file
   enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
-  //raiseRFID();
+  raiseRFID();
 }
 
 uint32_t getLeftFrontEncoderCount() {
