@@ -22,8 +22,8 @@
 
 #include <WiFi.h>
 
-const char* ssid     = "my-network";
-const char* password = "Luni.23!";
+const char* ssid     = "xxxxx";
+const char* password = "xxxxx";
 
 WiFiServer server(8080);
 WiFiClient client;
