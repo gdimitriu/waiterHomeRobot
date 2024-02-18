@@ -25,17 +25,12 @@
 #define SIZE_BUFFER_BRAIN 256
 static char inDataBrain[SIZE_BUFFER_BRAIN];
 
-#define SIZE_BUFFER_ENGINES 50 // same as in moving engines
-static char inDataEngines[SIZE_BUFFER_ENGINES];
-
-static int enginesIndex;
-
 static int brainIndex;
 
 void initCommunications() {
   //initialize serial to moving engine processor
   Serial2.begin(38400);
-  //initialize serial to brain or BLE if had no brain
+  //initialize serial to brain or BLE if has no brain
   Serial3.begin(38400);
 }
 
@@ -47,25 +42,15 @@ static void makeCleanupBrain() {
   Serial3.flush();
 }
 
-static void makeCleanupEngines() {
-  for ( enginesIndex = 0; enginesIndex < SIZE_BUFFER_ENGINES; enginesIndex++ ) {
-    inDataEngines[enginesIndex] = '\0';
-  }
-  enginesIndex = 0;
-  Serial2.flush();
-}
-
 static void sendCommandToEngines() {
-  makeCleanupEngines();
   Serial2.print(inDataBrain);
   Serial2.flush();    
   makeCleanupBrain();
-  isForMeFromEngines = false;
 }
 
 static boolean isEnginesCommand() {
   //single command + #\r\n
-  if ( strlen(inDataBrain) == 4 ) {
+  if ( strlen(inDataBrain) == 2 ) {
     return true;
   }
   //special command with data
@@ -87,7 +72,7 @@ static void processLcdCommand() {
 }
 
 static void processCommand() {
-  if ( isEnginesCommand ) { 
+  if ( isEnginesCommand() ) { 
     //single command are routed to the engines processor and wait reply and send back data to brain
     sendCommandToEngines();
   } else { //it is for me
@@ -96,11 +81,11 @@ static void processCommand() {
         processLcdCommand();
         break;
       default:
-        cleanupBrain();
+        makeCleanupBrain();
         sprintf(inDataBrain,"unknown operation\r\n");
         Serial3.print(inDataBrain);
         Serial3.flush();
-        cleanupBrain();
+        makeCleanupBrain();
     }
   }
 }
@@ -135,18 +120,8 @@ void receiveCommand() {
     }
     //receive comes from moving processor as a reply for me
     if ( Serial2.available() > 0 ) {
-      if ( enginesIndex < ( SIZE_BUFFER_ENGINES - 1 ) ) {
-        char inChar = Serial2.read(); // Read a character
-        boolean isData = true;
-        inDataEngines[enginesIndex++] = inChar; // Store it
-        inDataEngines[enginesIndex] = '\0'; // Null terminate the string
-        if ( inChar == '\n' ) {
-            isEngines = true;
-            break;
-        }
-      } else { //too big something is wrong
-        makeCleanupEngines();
-      }
+      Serial3.write(Serial2.read()); // Read a character
+      Serial3.flush();
     }
   }
 
@@ -157,15 +132,5 @@ void receiveCommand() {
         isBrain = false;
       }
     }
-  }
-  
-  if ( isEngines ) {
-    if ( enginesIndex >= 2 ) {
-      if ( inDataEngines[enginesIndex - 1] == '\n' && inDataEngines[enginesIndex - 2] == '\r' ) {
-         Serial3.print(inDataEngines);
-         Serial3.flush();
-         makeCleanupEngines();
-      }
-    }
-  }
+  }  
 }

@@ -27,6 +27,8 @@
 #include "rfid.h"
 
 void setup() {
+  //for debug reasons
+  //Serial.begin(38400);
 #ifdef TEST_SD_LCD
   Serial.begin(38400);
 #endif
@@ -51,7 +53,7 @@ void setup() {
 }
 
 void loop() {
-  //receiveCommand();
+  receiveCommand();
 #ifdef TEST_LCD
   printInLoopLcdTest();
 #endif

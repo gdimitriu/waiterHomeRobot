@@ -32,7 +32,7 @@
  * uncomment this to have LCD test
  * 
  **********************************************/
-#define TEST_LCD
+//#define TEST_LCD
 
 /*********************************************
  * 

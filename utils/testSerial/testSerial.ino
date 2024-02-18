@@ -20,16 +20,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
+#include <NeoSWSerial.h>
+#include <EnableInterrupt.h>
 
 #define RxD 8
 #define TxD 9
 
-SoftwareSerial BTSerial(RxD, TxD);
+//SoftwareSerial BTSerial(RxD, TxD);
+NeoSWSerial BTSerial(RxD, TxD);
+
+void neoSSerial1ISR() {
+    NeoSWSerial::rxISR(*portInputRegister(digitalPinToPort(RxD)));
+}
 
 void setup() {
   Serial.begin(38400);
   BTSerial.begin(38400);
+   enableInterrupt(RxD, neoSSerial1ISR, CHANGE);
   Serial.println("Starting ...");
 }
 

@@ -21,7 +21,6 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <SPI.h>
 #include <NeoSWSerial.h>
 #include "configuration.h"
 #include "MoveEngines.h"
@@ -40,7 +39,6 @@ void setup()
 {
     //enable serial
     BTSerial.begin(38400);
-    SPI.begin(); // Init SPI bus
     isValidInput = false;
     cleanupSerial = false;
     engineSetup();
@@ -50,7 +48,6 @@ void setup()
 boolean isValidNumber( char *data, int size )
 {
   if ( size == 0 ) return false;
-   boolean isNum=false;
    if( !( data[0] == '+' || data[0] == '-' || isDigit(data[0]) ) ) return false;
 
    for( byte i=1; i<size; i++ )
@@ -373,7 +370,7 @@ void loop()
      }
  }
  if ( index >= 1 ) {
-  if ( inData[index - 1] == '#' ) {
+  if ( inData[index - 1] == '#' ) {    
     makeMove();
   } else if ( cleanupSerial ) {
     makeCleanup();

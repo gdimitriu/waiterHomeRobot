@@ -22,8 +22,8 @@
 
 #include <WiFi.h>
 
-const char* ssid     = "xxxxx";
-const char* password = "xxxxx";
+const char* ssid     = "my-network";
+const char* password = "Luni.23!";
 
 WiFiServer server(8080);
 WiFiClient client;
@@ -34,11 +34,13 @@ WiFiClient client;
 boolean cleanupSerial;
 bool isValidInput;
 char inData[SERIAL_BUFFER]; // Allocate some space for the string
+char buffer[SERIAL_BUFFER];
 char inChar; // Where to store the character read
 int indexReceive = 0; // indexReceive into array; where to store the character
 int currentPower = 0;
 int minPower = 0;
 int maxPower = 0;
+boolean hasConnection = false;
 
 void setup()
 {
@@ -68,7 +70,11 @@ void setup()
     Serial.println(WiFi.localIP());
     
     server.begin();
-    client = 0;
+    client = server.available();   // listen for incoming clients
+    if ( client ) {
+      hasConnection = true;
+      Serial.println("New Client.");
+    }
 }
 
 boolean isValidNumber( char *data, int size )
@@ -84,13 +90,15 @@ boolean isValidNumber( char *data, int size )
    return true;
 }
 
-boolean makeCleanup() {
+void makeCleanup() {
+  Serial.print("MakeCleanup core=");Serial.println(xPortGetCoreID());
+  Serial.flush();
   for ( indexReceive = 0; indexReceive < SERIAL_BUFFER; indexReceive++ ) {
     inData[indexReceive] = '\0';
   }
   indexReceive = 0;
-  inChar ='0';
-  client.flush();
+  inChar ='\0';
+  //client.flush();
 }
 
 void sendOK() {
@@ -250,7 +258,6 @@ bool moveOrRoatateWithDistanceCommand() {
 }
 
 bool makeMove() {
-  char buffer[SERIAL_BUFFER];
   for ( int i = 0; i < SERIAL_BUFFER; i++ ) {
     buffer[i] = '\0';
   }
@@ -317,7 +324,7 @@ bool makeMove() {
       } else if ( inData[0] == 'M' ) {
         return moveOrRotateUntilNextCommand();
       } else if ( inData[0] == 'm' ) { //move or rotate with distance
-        bool moving = moveOrRoatateWithDistanceCommand();        
+        return moveOrRoatateWithDistanceCommand();        
       } else if ( inData[0] == 'r' ) {
         if ( inData[1] == 'u' ) {
           Serial.println("Rise rfid");
@@ -355,45 +362,61 @@ bool makeMove() {
     return true;
 }
 
+void receiveCommands() {
+  while ( client.connected() ) {
+    while ( client.available() > 0 ) // Don't read unless there you know there is data
+    {
+      Serial.print("receive core=");Serial.println(xPortGetCoreID());
+      Serial.flush();
+      if ( indexReceive < (SERIAL_BUFFER - 1) ) // One less than the size of the array
+      {
+          inChar = client.read(); // Read a character
+          if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {
+            continue;
+          }
+          //commands start with a letter capital or small
+          if ( indexReceive == 0 && !( ( inChar >64 && inChar <91 ) || ( inChar > 96 && inChar<123 ) ) ) {
+            continue;
+          }    
+          inData[indexReceive++] = inChar; // Store it
+          inData[indexReceive] = '\0'; // Null terminate the string
+//          if ( inChar == '#' )
+//            break;
+      } else {
+          makeCleanup();
+          cleanupSerial = true;
+      }
+    }
+    if ( indexReceive >= 1 ) {
+      if ( inData[indexReceive - 1] == '#' ) {
+        Serial.print("indexReceive = ");Serial.println(indexReceive);
+        Serial.print("Make move = ");Serial.println(inData);
+        makeMove();
+      } else if ( cleanupSerial ) {
+        Serial.print("indexReceive = ");Serial.println(indexReceive);
+        Serial.print("Make cleanup extern = ");Serial.println(inData);
+        makeCleanup();
+        cleanupSerial = false;
+      } else {
+        delay(10);
+      }
+    }
+  }
+ if ( !client.connected() ) {
+  Serial.println("Client disconnected!");Serial.flush();
+  client.stop();
+  hasConnection = false;
+ }
+}
 void loop()
 {
-  if ( !client.connected() ) {
+  if ( !hasConnection ) {
     client = server.available();   // listen for incoming clients
+    if (client) {                             // if you get a client,
+        Serial.println("New Client.");           // print a message out the serial port
+        hasConnection = true;
+        receiveCommands();
+    }
   }
-  while ( client && client.connected() && client.available() > 0 ) // Don't read unless there you know there is data
-  {
-     if ( indexReceive < (SERIAL_BUFFER - 1) ) // One less than the size of the array
-     {
-        inChar = client.read(); // Read a character
-        if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {
-          continue;
-        }
-        //commands start with a letter capital or small
-        if ( indexReceive == 0 && !( ( inChar >64 && inChar <91 ) || ( inChar > 96 && inChar<123 ) ) ) {
-          continue;
-        }    
-        inData[indexReceive++] = inChar; // Store it
-        inData[indexReceive] = '\0'; // Null terminate the string
-        if ( inChar == '#' ) {
-          break;
-        }
-     } else {
-        makeCleanup();
-        cleanupSerial = true;
-     }
- }
- if ( indexReceive >= 1 ) {
-  if ( inData[indexReceive - 1] == '#' ) {
-    makeMove();
-  } else if ( cleanupSerial ) {
-    makeCleanup();
-    cleanupSerial = false;
-  } else {
-    delay(10);
-  }
- }
- if (!client && !client.connected() ) {
-  client.stop();
-  client = 0;
- }
+  
 }

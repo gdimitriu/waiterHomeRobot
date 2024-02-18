@@ -74,7 +74,8 @@ void printMenu() {
 void setup() {
   Serial.begin(9600); // Initialize serial communications with the PC
   SPI.begin(); // Init SPI bus
-  mfrc522.PCD_Init(); // Init MFRC522 card 
+  mfrc522.PCD_Init(); // Init MFRC522 card
+  delay(5);
   Serial.println("Starting!");
   if (!mfrc522.PCD_PerformSelfTest())
     Serial.println("Self test failed");
