@@ -22,8 +22,8 @@
 
 #include <WiFi.h>
 
-const char* ssid     = "my-network";
-const char* password = "Luni.23!";
+const char* ssid     = "xxxxx";
+const char* password = "xxxx";
 
 WiFiServer server(8080);
 WiFiClient client;
@@ -103,7 +103,6 @@ void makeCleanup() {
 
 void sendOK() {
   client.println("OK");
-  client.flush();
 }
 
 bool setMaxPowerCommand() {
@@ -268,42 +267,33 @@ bool makeMove() {
     if ( inData[0] == 'I' ) {
       sprintf(buffer,"unsupported\r\n");
       client.print(buffer);
-      client.flush();
     } else if ( inData[0] == 'V' ) {      
       sprintf(buffer,"%d\r\n",maxPower);
       client.print(buffer);
-      client.flush();
     } else if ( inData[0] == 'v' ) {
       sprintf(buffer,"%d\r\n",minPower);
       client.print(buffer);
-      client.flush();
     } else if ( inData[0] == 'c' ) {
       sprintf(buffer,"%d\r\n",currentPower);
       client.print(buffer);
-      client.flush();
     }  else if ( inData[0] == 'd' ) {
       sprintf(buffer,"%d\r\n",0);
       client.print(buffer);
-      client.flush();
     } else if ( inData[0] == 's' ) {
       sprintf(buffer,"%d\r\n",0);
       client.print(buffer);
-      client.flush();
     } else if ( inData[0] == 'b' ) {  //break all engines
       Serial.println("Break all engines");
     } else if ( inData[0] == 'C' ) { //get encoder values
       sprintf(buffer,"%ld:%ld:%ld:%ld\r\n",200,200,200,200);
       client.print(buffer);
-      client.flush();
     } else if (inData[0] == 'R') { //reset encoders
       Serial.println("Reset encoders");
       sprintf(buffer,"%d\r\n",0);
       client.print(buffer);
-      client.flush();
     } else {
       sprintf(buffer,"%d\r\n",0);
       client.print(buffer);
-      client.flush();
       makeCleanup();
       isValidInput = false;
       return false;
@@ -330,20 +320,16 @@ bool makeMove() {
           Serial.println("Rise rfid");
           sprintf(buffer,"OK\r\n");
           client.print(buffer);
-          client.flush();
         } else if ( inData[1] == 'l' ) {
           Serial.println("Lower Rfid");
           sprintf(buffer,"OK\r\n");
           client.print(buffer);
-          client.flush();
         } else if ( inData[1] == 'p' ) {
           sprintf(buffer,"%d\r\n", 10);
           client.print(buffer);
-          client.flush();
         } else {
           sprintf(buffer,"unsupported\r\n");
           client.print(buffer);
-          client.flush();
           makeCleanup();
           isValidInput = false;
           return false;
@@ -351,7 +337,6 @@ bool makeMove() {
       } else {
         sprintf(buffer,"%d\r\n",0);
         client.print(buffer);
-        client.flush();
         makeCleanup();
         isValidInput = false;
         return false;
@@ -380,8 +365,8 @@ void receiveCommands() {
           }    
           inData[indexReceive++] = inChar; // Store it
           inData[indexReceive] = '\0'; // Null terminate the string
-//          if ( inChar == '#' )
-//            break;
+          if ( inChar == '#' )
+            break;
       } else {
           makeCleanup();
           cleanupSerial = true;
@@ -404,6 +389,7 @@ void receiveCommands() {
   }
  if ( !client.connected() ) {
   Serial.println("Client disconnected!");Serial.flush();
+  client.flush();
   client.stop();
   hasConnection = false;
  }
