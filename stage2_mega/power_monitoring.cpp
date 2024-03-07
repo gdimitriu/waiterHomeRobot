@@ -1,9 +1,7 @@
 /*
- * Stage 2 - sound module
+ * Stage 2 - Power monitoring
  * 
- * This use the SD card to make sound (play messages)
- * 
- * Copyright 2023 Gabriel Dimitriu* 
+ * Copyright 2024 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
 
@@ -22,12 +20,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#include "sound_module.h"
+#include "power_monitoring.h"
+#include <UniversalTimer.h>
+#include "lcd_operations.h"
 
-#include <TMRpcm.h>
+static UniversalTimer *timerPower;
 
-static TMRpcm tmrpcm;
 
-void initSoundModule() {
-  
+void initPowerMonitoring() {
+  timerPower = new UniversalTimer(POWER_MONITORING_INTERVAL, true);
+}
+
+float getPowerLevel() {
+  float temp;      
+  float val11=analogRead(POWER_MONITORING_PIN);      
+  temp=val11/4.092;      
+  val11=temp/10.0;
+  return val11;
+}
+
+uint8_t getPowerLineBar() {
+  return 0;
+}
+
+void usePowerLevelAtTimeout() {
+  //timeout occured
+   if ( timerPower->check() ) {
+     printCurrentACCPower(getPowerLevel());
+   }
 }

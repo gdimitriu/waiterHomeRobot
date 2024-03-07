@@ -22,17 +22,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#include <SD.h>
 #include "sd_operations.h"
 #include "lcd_operations.h"
+#include <TMRpcm.h>
+
 #define LINE_SIZE 256
+
+
+static TMRpcm tmrpcm;
 
 static bool alreadyBegan = false;  // SD.begin() misbehaves if not first call
 static char lineBuffer[LINE_SIZE];
 static File fd;
 
 void initSDCardReader() {
-#ifdef TEST_SD_LCD  
+#ifdef SERIAL_DEBUG  
   Serial.println("InitSD");
 #endif
   pinMode(CARD_DETECT_SD, INPUT);
@@ -52,15 +56,18 @@ void initSDCardReader() {
   // even if it worked if it's not the first call.
   if (!SD.begin(CHIP_SELECT_SD) && !alreadyBegan)  // begin uses half-speed...
   {
+#ifdef SERIAL_DEBUG
     if(SD.begin(CHIP_SELECT_SD)) {
       Serial.println("fail");
     }
+#endif    
     initSDCardReader(); // Possible infinite retry loop is as valid as anything
   }
   else
   {
     alreadyBegan = true;
   }
+  tmrpcm.speakerPin = LEFT_SPEAKER_PIN;
 }
 
 bool openFile(char *fileName) {
@@ -114,20 +121,36 @@ void readFullFile(char *buffer, unsigned int size) {
 #ifdef TEST_SD_LCD  
   void printInSetupSdLcdTest() {    
     char fileName[] = "tests/sd_lcd.txt";
+#ifdef SERIAL_DEBUG    
     Serial.println("before");
+#endif    
     printCurrentFilePath(fileName);
+#ifdef SERIAL_DEBUG    
     Serial.println("after");
+#endif    
     if(openFile("tests/sd_lcd.txt")) {
       char * line = readNextLine();
+#ifdef SERIAL_DEBUG      
       Serial.println(line);
+#endif      
       while(line != NULL) {
         printNextLineText(line,24);
+#ifdef SERIAL_DEBUG        
         Serial.println(line);
+#endif        
         line = readNextLine();
       }
       closeFile();
-    } else {
+    }
+#ifdef SERIAL_DEBUG    
+    else {
       Serial.println("File does not exist");
     }
+#endif    
   }
 #endif
+
+void playSound(char *fileName) {
+  tmrpcm.setVolume(6);
+  tmrpcm.play(fileName);
+}

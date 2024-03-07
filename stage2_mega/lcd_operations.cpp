@@ -24,7 +24,7 @@
 #include <Ucglib.h>
 #include "lcd_operations.h"
 
-#define BEGIN_CUSTOM_MESSAGES 36
+#define CUSTOM_MESSAGES 36
 static Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ DC_LCD , /*cs=*/ CS_LCD, /*reset=*/ RST_LCD);
 
 static ucg_int_t currentPosition;
@@ -37,13 +37,13 @@ void initLCD() {
   ucg.setColor(2, 20, 0, 20);
   ucg.setColor(3, 60, 0, 0);
   ucg.setRotate270();
-  currentPosition = BEGIN_CUSTOM_MESSAGES;
+  currentPosition = CUSTOM_MESSAGES;
 }
 
 void resetLinePos() {
   ucg.setColor(0, 0, 0);
-  ucg.drawBox(0, BEGIN_CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight());
-  currentPosition = BEGIN_CUSTOM_MESSAGES;
+  ucg.drawBox(0, CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight() - CUSTOM_MESSAGES );
+  currentPosition = CUSTOM_MESSAGES;
 }
 
 bool printNextLineText(char *text, uint8_t fontSize) {
@@ -51,14 +51,14 @@ bool printNextLineText(char *text, uint8_t fontSize) {
     case 8:
       ucg.setFont(ucg_font_helvB08_hr);
       currentPosition  += 13;
-      if (currentPosition > ucg.getHeight()) {
+      if ( currentPosition > ( ucg.getHeight() - CUSTOM_MESSAGES ) ) {
         return false;
       }
       break;
     case 24:
       ucg.setFont(ucg_font_helvB24_hr);
       currentPosition += 29;
-      if (currentPosition > ucg.getHeight()) {
+      if ( currentPosition > ( ucg.getHeight() - CUSTOM_MESSAGES ) ) {
         return false;
       }
       break;
@@ -73,14 +73,31 @@ bool printNextLineText(char *text, uint8_t fontSize) {
 void printCurrentFilePath(char *filePath) {
   ucg.setFont(ucg_font_helvB12_hr);
   ucg.setColor(0, 255, 0);
-  ucg.drawBox(0, 0, ucg.getWidth(), BEGIN_CUSTOM_MESSAGES);
+  ucg.drawBox(0, 0, ucg.getWidth(), CUSTOM_MESSAGES);
   ucg.setColor(255, 0, 0);
   ucg.setPrintDir(0);
   ucg.setPrintPos(2,17);
   ucg.print("Current file path");
-  ucg.setPrintPos(2,BEGIN_CUSTOM_MESSAGES - 2);
+  ucg.setPrintPos(2,CUSTOM_MESSAGES - 2);
   ucg.setPrintDir(0);
   ucg.print(filePath);
+}
+
+
+void printCurrentACCPower(float value) {
+  ucg.setFont(ucg_font_helvB24_hr);
+  ucg.setColor(0, 255, 0);
+  ucg.drawBox(0, ucg.getHeight() - CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight());
+  ucg.setColor(255, 0, 0);
+  ucg.setPrintDir(0);
+  ucg.setPrintPos(2,ucg.getHeight() - 7);
+  char buffer[50];
+  char szF[7];
+  memset(szF,0,sizeof(char)*7);
+  dtostrf( value, 4, 2, szF );
+  memset(buffer,0,sizeof(char)*50);
+  sprintf(buffer,"Power : %s V",szF);
+  ucg.print(buffer);
 }
 
 /**********************************************************************
@@ -108,7 +125,7 @@ void printCurrentFilePath(char *filePath) {
       sprintf(buffer,"line %d",i);
       printNextLineText(buffer,24);
     }
-    for(int i = 0; i < 1000; i++) {
+    for(int i = 0; i < 10; i++) {
       memset(buffer,0,sizeof(char)*50);
       sprintf(buffer,"route %d",i);
       printCurrentFilePath(buffer);

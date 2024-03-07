@@ -19,8 +19,11 @@
  * along with waiterHomeRobot; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
-#include "communication.h"
 #include <Arduino.h>
+#include "communication.h"
+#include "power_monitoring.h"
+#include "sd_operations.h"
+
 
 #define SIZE_BUFFER_BRAIN 256
 static char inDataBrain[SIZE_BUFFER_BRAIN];
@@ -49,10 +52,6 @@ static void sendCommandToEngines() {
 }
 
 static boolean isEnginesCommand() {
-  //single command + #\r\n
-  if ( strlen(inDataBrain) == 2 ) {
-    return true;
-  }
   //special command with data
   switch (inDataBrain[0]) {
     case 'v': //set minPower
@@ -60,6 +59,9 @@ static boolean isEnginesCommand() {
     case 'm': //move/rotate with distance
     case 'M': //move/rotate by human
     case 'c': //set current power
+    case 'b': //break engines
+    case 'C': //get encoder values
+    case 'R': //reset encoders
     case 'r': //RFID operations
       return true;
     default:
@@ -71,12 +73,33 @@ static void processLcdCommand() {
   
 }
 
+static void processAccPowerLevelCommand() {
+  Serial3.print(getPowerLevel());
+  Serial3.flush();
+  makeCleanupBrain();
+}
+
+static void processSoundCommand() {
+  //remove P
+  char *temp = inDataBrain + 1;
+  //remove #
+  temp[strlen(temp)] = '\0';
+  playSound(temp);
+  makeCleanupBrain();
+}
+
 static void processCommand() {
   if ( isEnginesCommand() ) { 
     //single command are routed to the engines processor and wait reply and send back data to brain
     sendCommandToEngines();
   } else { //it is for me
     switch (inDataBrain[0]) {
+      case 'P': //get accumulator power level
+        if ( strlen(inDataBrain) == 1 )
+          processAccPowerLevelCommand();
+        else
+          processSoundCommand();
+        break;
       case 'l': //lcd operation
         processLcdCommand();
         break;

@@ -1,9 +1,7 @@
 /*
- * Stage 2 - SD card operation
+ * Stage 2 - Power monitoring
  * 
- * This is used only for LCD and other operations not for Sound Module.
- * 
- * Copyright 2023 Gabriel Dimitriu* 
+ * Copyright 2024 Gabriel Dimitriu
  *
  * This file is part of waiterHomeRobot project.
 
@@ -22,16 +20,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#ifndef __SOUND_MODULE_H__
-#define __SOUND_MODULE_H__
-
+#ifndef __POWER_MONITORING_H__
+#define __POWER_MONITORING_H__
 #include "configuration.h"
+#include <Arduino.h>
 
-/**********************************************
- * 
- * initialize the sound module
- * 
- **********************************************/
-extern void initSoundModule();
+/*
+ * initialize timers for power monitoring
+ */
+extern void initPowerMonitoring();
+
+/*
+ * get the power level as volts
+ */
+extern float getPowerLevel();
+
+/*
+ * get the power level as bar
+ */
+extern uint8_t getPowerLineBar();
+
+extern void usePowerLevelAtTimeout();
 
 #endif

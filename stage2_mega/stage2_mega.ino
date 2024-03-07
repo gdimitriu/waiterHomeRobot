@@ -23,13 +23,12 @@
 #include "communication.h"
 #include "lcd_operations.h"
 #include "sd_operations.h"
-#include "sound_module.h"
 #include "rfid.h"
+#include "power_monitoring.h"
 
 void setup() {
   //for debug reasons
-  //Serial.begin(38400);
-#ifdef TEST_SD_LCD
+#ifdef SERIAL_DEBUG
   Serial.begin(38400);
 #endif
   initCommunications();
@@ -43,17 +42,20 @@ void setup() {
 #ifdef HAS_RFID
   initRFID();
 #endif
-  initSoundModule();
 
 #ifdef HAS_SD
 #ifdef TEST_SD_LCD  
   printInSetupSdLcdTest();
 #endif
 #endif
+
+  initPowerMonitoring();
+  printCurrentACCPower(getPowerLevel());
 }
 
 void loop() {
   receiveCommand();
+  usePowerLevelAtTimeout();
 #ifdef TEST_LCD
   printInLoopLcdTest();
 #endif

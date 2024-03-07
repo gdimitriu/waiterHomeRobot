@@ -24,7 +24,7 @@
 
 #ifndef __SD_OPERATIONS_H__
 #define __SD_OPERATIONS_H__
-
+#include <SD.h>
 #include "configuration.h"
 
 /**********************************************
@@ -71,4 +71,11 @@ extern void readFullFile(char *buffer, unsigned int size);
   extern void printInSetupSdLcdTest();
 #endif
 
+/**********************************************
+ * 
+ * 
+ * play fileName
+ * 
+ **********************************************/
+extern void playSound(char *fileName);
 #endif

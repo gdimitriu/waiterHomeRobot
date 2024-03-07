@@ -56,6 +56,13 @@ extern void resetLinePos();
  **********************************************/
 extern void printCurrentFilePath(char *filePath);
 
+/**********************************************
+ * 
+ * print the accumulator power level
+ * 
+ **********************************************/
+extern void printCurrentACCPower(float value);
+
 /**********************************************************************
  *
  * standalone tests enabled by TEST_LCD flag
