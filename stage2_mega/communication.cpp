@@ -23,6 +23,7 @@
 #include "communication.h"
 #include "power_monitoring.h"
 #include "sd_operations.h"
+#include "lcd_operations.h"
 
 
 #define SIZE_BUFFER_BRAIN 256
@@ -32,9 +33,9 @@ static int brainIndex;
 
 void initCommunications() {
   //initialize serial to moving engine processor
-  Serial2.begin(38400);
+  ENGINES_PROC_SERIAL.begin(38400);
   //initialize serial to brain or BLE if has no brain
-  Serial3.begin(38400);
+  BRAIN_COMM_SERIAL.begin(38400);
 }
 
 static void makeCleanupBrain() {
@@ -42,12 +43,12 @@ static void makeCleanupBrain() {
     inDataBrain[brainIndex] = '\0';
   }
   brainIndex = 0;
-  Serial3.flush();
+  BRAIN_COMM_SERIAL.flush();
 }
 
 static void sendCommandToEngines() {
-  Serial2.print(inDataBrain);
-  Serial2.flush();    
+  ENGINES_PROC_SERIAL.print(inDataBrain);
+  ENGINES_PROC_SERIAL.flush();    
   makeCleanupBrain();
 }
 
@@ -69,13 +70,87 @@ static boolean isEnginesCommand() {
   }
 }
 
+static void printLcdLine(char *realData) {
+  char buff[5];
+  memset(buff,'\0',5*sizeof(char));
+  char *pBuff = buff;
+  while ( *realData != ',' ) {
+    *pBuff = *realData;
+    pBuff++;
+    realData++;
+  }
+  //remove ,
+  realData++;
+  printNextLineText(realData,atoi(buff));  
+}
+
+static void printFileOnLcd(char *realData) {
+  char buff[5];
+  memset(buff,'\0',5*sizeof(char));
+  char *pBuff = buff;
+  while ( *realData != ',' ) {
+    *pBuff = *realData;
+    pBuff++;
+    realData++;
+  }
+  //remove ,
+  realData++;
+  if (!openFile(realData)) {
+    return;
+  }
+  resetLinePos();
+  char *lineRead = readNextLine();
+  int fontSize = atoi(buff);
+  while (  printNextLineText(lineRead, fontSize) ) {
+    lineRead = readNextLine();
+    if ( lineRead == NULL)
+      break;
+  }
+  closeFile();
+}
+
 static void processLcdCommand() {
-  
+  char *realData = inDataBrain;
+  //remove l
+  realData++;
+  //remove #
+  realData[strlen(realData) - 1] = '\0';
+#ifdef SERIAL_DEBUG
+  Serial.println(realData);
+  Serial.flush();
+#endif  
+  if ( strlen(realData) == 1 ) {
+    //single commands
+    switch ( *realData ) {
+      //clear lcd
+      case 'c' :
+        resetLinePos();
+        break;
+    }
+  } else {
+    switch ( *realData ) {
+      case 'n' :
+        //remove n
+        realData++;
+        //remove ,
+        realData++;
+        printLcdLine(realData);
+        break;
+      case 'f' :
+        //remove f
+        realData++;
+        //remove ,
+        realData++;
+        printFileOnLcd(realData);
+        break;
+    }
+  }
+  makeCleanupBrain();
 }
 
 static void processAccPowerLevelCommand() {
-  Serial3.print(getPowerLevel());
-  Serial3.flush();
+  BRAIN_COMM_SERIAL.print(getPowerLevel());
+  BRAIN_COMM_SERIAL.flush();
   makeCleanupBrain();
 }
 
@@ -106,8 +181,8 @@ static void processCommand() {
       default:
         makeCleanupBrain();
         sprintf(inDataBrain,"unknown operation\r\n");
-        Serial3.print(inDataBrain);
-        Serial3.flush();
+        BRAIN_COMM_SERIAL.print(inDataBrain);
+        BRAIN_COMM_SERIAL.flush();
         makeCleanupBrain();
     }
   }
@@ -116,11 +191,11 @@ static void processCommand() {
 void receiveCommand() {
   boolean isBrain = false;
   boolean isEngines = false;
-  while ( Serial2.available() > 0 || Serial3.available() > 0 ) {
+  while ( ENGINES_PROC_SERIAL.available() > 0 || BRAIN_COMM_SERIAL.available() > 0 ) {
     //order comes from BLE or brain
-    if ( Serial3.available() > 0 ) {
+    if ( BRAIN_COMM_SERIAL.available() > 0 ) {
       if ( brainIndex < ( SIZE_BUFFER_BRAIN - 1 ) ) {
-        char inChar = Serial3.read(); // Read a character
+        char inChar = BRAIN_COMM_SERIAL.read(); // Read a character
         boolean isData = true;
         if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {
           isData = false;
@@ -142,9 +217,9 @@ void receiveCommand() {
       }
     }
     //receive comes from moving processor as a reply for me
-    if ( Serial2.available() > 0 ) {
-      Serial3.write(Serial2.read()); // Read a character
-      Serial3.flush();
+    if ( ENGINES_PROC_SERIAL.available() > 0 ) {
+      BRAIN_COMM_SERIAL.write(ENGINES_PROC_SERIAL.read()); // Read a character
+      BRAIN_COMM_SERIAL.flush();
     }
   }
 

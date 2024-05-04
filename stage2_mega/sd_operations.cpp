@@ -35,10 +35,12 @@ static bool alreadyBegan = false;  // SD.begin() misbehaves if not first call
 static char lineBuffer[LINE_SIZE];
 static File fd;
 
+
 void initSDCardReader() {
 #ifdef SERIAL_DEBUG  
   Serial.println("InitSD");
 #endif
+#ifndef IS_STANDALONE
   pinMode(CARD_DETECT_SD, INPUT);
   // Is there even a card?
   if (!digitalRead(CARD_DETECT_SD)) {
@@ -51,7 +53,7 @@ void initSDCardReader() {
     resetLinePos();
     delay(250); // 'Debounce insertion'
   }
-  
+#endif  
   // Card seems to exist.  begin() returns failure
   // even if it worked if it's not the first call.
   if (!SD.begin(CHIP_SELECT_SD) && !alreadyBegan)  // begin uses half-speed...

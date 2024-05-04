@@ -33,7 +33,7 @@
  * uncomment this to have serial debug
  * 
  **********************************************/
- //#define SERIAL_DEBUG
+ #define SERIAL_DEBUG
  
 /**********************************************
  * 
@@ -49,13 +49,29 @@
  * data are into tests/sd_lcd.txt
  * 
  *********************************************/
-#define TEST_SD_LCD
+//#define TEST_SD_LCD
 
 /*********************************************************************
  * 
  * Real Functionality
  * 
  *********************************************************************/
+
+/**********************************************
+ * 
+ * serial port for brain or communication device
+ *  
+ **********************************************/
+//#define BRAIN_COMM_SERIAL Serial3
+#define BRAIN_COMM_SERIAL Serial
+
+#define IS_STANDALONE
+/**********************************************
+ * 
+ * serial port for engine processor
+ *  
+ **********************************************/
+#define ENGINES_PROC_SERIAL Serial2
 /**********************************************
  * DC from ILI9341 pin
  * 
@@ -77,7 +93,7 @@
 
 /**********************************************
  * 
- * if has rfid SD CARD READER
+ * if has SD CARD READER
  *  
  **********************************************/
 #define HAS_SD
@@ -130,4 +146,5 @@
  *  
  **********************************************/
 #define POWER_MONITORING_INTERVAL 60000
+
 #endif

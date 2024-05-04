@@ -38,11 +38,18 @@ void initLCD() {
   ucg.setColor(3, 60, 0, 0);
   ucg.setRotate270();
   currentPosition = CUSTOM_MESSAGES;
+  ucg.setFont(ucg_font_helvB12_hr);
+  ucg.setColor(0, 255, 0);
+  ucg.drawBox(0, 0, ucg.getWidth(), CUSTOM_MESSAGES);
+  ucg.setColor(255, 0, 0);
+  ucg.setPrintDir(0);
+  ucg.setPrintPos(2,17);
+  ucg.print("Current file path");
 }
 
 void resetLinePos() {
   ucg.setColor(0, 0, 0);
-  ucg.drawBox(0, CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight() - CUSTOM_MESSAGES );
+  ucg.drawBox(0, CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight() - 2 * CUSTOM_MESSAGES );
   currentPosition = CUSTOM_MESSAGES;
 }
 
