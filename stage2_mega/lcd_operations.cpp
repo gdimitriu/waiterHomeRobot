@@ -25,30 +25,51 @@
 #include "lcd_operations.h"
 
 #define CUSTOM_MESSAGES 36
+#ifdef LCD_IS_COlOR_INVERSE
+  #define MAX_COLOR 0
+  #define MIN_COLOR 255
+#else
+  #define MAX_COLOR 255
+  #define MIN_COLOR 0
+#endif
+
 static Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ DC_LCD , /*cs=*/ CS_LCD, /*reset=*/ RST_LCD);
 
 static ucg_int_t currentPosition;
 
+void showStartMessage() {
+  ucg.setFont(ucg_font_helvB24_hr);
+  ucg.setPrintDir(0);
+  ucg.setColor(MIN_COLOR,MIN_COLOR ,MIN_COLOR);
+  ucg.setPrintPos(24, ucg.getHeight() - CUSTOM_MESSAGES - 10);
+  ucg.print("Have a Nice Day !");  
+  ucg.setColor(MAX_COLOR,MAX_COLOR ,MIN_COLOR);
+  ucg.drawDisc(ucg.getWidth()/2, CUSTOM_MESSAGES+75, 44, UCG_DRAW_ALL);
+  ucg.setColor(MIN_COLOR,MAX_COLOR,MAX_COLOR);
+  ucg.drawDisc(ucg.getWidth()/2, CUSTOM_MESSAGES+85, 5, UCG_DRAW_ALL);
+  ucg.setColor(MAX_COLOR,MIN_COLOR ,MIN_COLOR);
+  ucg.drawBox(ucg.getWidth()/2-20, CUSTOM_MESSAGES+95, 40, 10);
+  ucg.drawDisc(ucg.getWidth()/2-20, CUSTOM_MESSAGES + 63, 10, UCG_DRAW_ALL);
+  ucg.drawDisc(ucg.getWidth()/2+20, CUSTOM_MESSAGES + 63, 10, UCG_DRAW_ALL);
+}
+
 void initLCD() {
   ucg.begin(UCG_FONT_MODE_TRANSPARENT);
   ucg.clearScreen();
-  ucg.setColor(0, 80, 40, 0);
-  ucg.setColor(1, 60, 0, 40);
-  ucg.setColor(2, 20, 0, 20);
-  ucg.setColor(3, 60, 0, 0);
   ucg.setRotate270();
   currentPosition = CUSTOM_MESSAGES;
   ucg.setFont(ucg_font_helvB12_hr);
-  ucg.setColor(0, 255, 0);
+  ucg.setColor(MIN_COLOR, MAX_COLOR, MIN_COLOR);
   ucg.drawBox(0, 0, ucg.getWidth(), CUSTOM_MESSAGES);
-  ucg.setColor(255, 0, 0);
+  ucg.setColor(MAX_COLOR, MIN_COLOR, MIN_COLOR);
   ucg.setPrintDir(0);
-  ucg.setPrintPos(2,17);
+  ucg.setPrintPos(2, 17);
   ucg.print("Current file path");
+  showStartMessage();
 }
 
 void resetLinePos() {
-  ucg.setColor(0, 0, 0);
+  ucg.setColor(MAX_COLOR, MAX_COLOR, MAX_COLOR);
   ucg.drawBox(0, CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight() - 2 * CUSTOM_MESSAGES );
   currentPosition = CUSTOM_MESSAGES;
 }
@@ -70,7 +91,7 @@ bool printNextLineText(char *text, uint8_t fontSize) {
       }
       break;
   }
-  ucg.setColor(255, 255, 255);
+  ucg.setColor(MAX_COLOR, MAX_COLOR, MAX_COLOR);
   ucg.setPrintPos(2, currentPosition);
   ucg.setPrintDir(0);
   ucg.print(text);
@@ -79,9 +100,9 @@ bool printNextLineText(char *text, uint8_t fontSize) {
 
 void printCurrentFilePath(char *filePath) {
   ucg.setFont(ucg_font_helvB12_hr);
-  ucg.setColor(0, 255, 0);
+  ucg.setColor(MIN_COLOR, MAX_COLOR, MIN_COLOR);
   ucg.drawBox(0, 0, ucg.getWidth(), CUSTOM_MESSAGES);
-  ucg.setColor(255, 0, 0);
+  ucg.setColor(MAX_COLOR, MIN_COLOR, MIN_COLOR);
   ucg.setPrintDir(0);
   ucg.setPrintPos(2,17);
   ucg.print("Current file path");
@@ -93,9 +114,9 @@ void printCurrentFilePath(char *filePath) {
 
 void printCurrentACCPower(float value) {
   ucg.setFont(ucg_font_helvB24_hr);
-  ucg.setColor(0, 255, 0);
+  ucg.setColor(MIN_COLOR, MAX_COLOR, MIN_COLOR);
   ucg.drawBox(0, ucg.getHeight() - CUSTOM_MESSAGES, ucg.getWidth(), ucg.getHeight());
-  ucg.setColor(255, 0, 0);
+  ucg.setColor(MAX_COLOR, MIN_COLOR, MIN_COLOR);
   ucg.setPrintDir(0);
   ucg.setPrintPos(2,ucg.getHeight() - 7);
   char buffer[50];

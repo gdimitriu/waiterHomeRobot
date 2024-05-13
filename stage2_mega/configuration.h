@@ -28,13 +28,18 @@
  *
  **********************************************************************/
 
+#define IS_STANDALONE 
+
  /**********************************************
  * 
  * uncomment this to have serial debug
  * 
  **********************************************/
- #define SERIAL_DEBUG
- 
+#ifdef IS_STANDALONE 
+  #define SERIAL_DEBUG
+#else  
+ //#define SERIAL_DEBUG
+#endif
 /**********************************************
  * 
  * uncomment this to have LCD test
@@ -57,15 +62,25 @@
  * 
  *********************************************************************/
 
+/*********************************************
+ * 
+ * this is used when lcd is color inverse
+ * 255 means color off
+ * 
+ *********************************************/
+#define LCD_IS_COlOR_INVERSE
+
 /**********************************************
  * 
  * serial port for brain or communication device
  *  
  **********************************************/
-//#define BRAIN_COMM_SERIAL Serial3
-#define BRAIN_COMM_SERIAL Serial
+#ifndef IS_STANDALONE
+  #define BRAIN_COMM_SERIAL Serial3
+#else  
+  #define BRAIN_COMM_SERIAL Serial
+#endif
 
-#define IS_STANDALONE
 /**********************************************
  * 
  * serial port for engine processor

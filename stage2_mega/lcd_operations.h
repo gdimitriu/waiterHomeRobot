@@ -63,6 +63,13 @@ extern void printCurrentFilePath(char *filePath);
  **********************************************/
 extern void printCurrentACCPower(float value);
 
+/**********************************************
+ * 
+ * show to emoji and the message Have a Nice Day !
+ * 
+ **********************************************/
+extern void showStartMessage();
+
 /**********************************************************************
  *
  * standalone tests enabled by TEST_LCD flag

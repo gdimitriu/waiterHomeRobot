@@ -35,7 +35,9 @@ void initCommunications() {
   //initialize serial to moving engine processor
   ENGINES_PROC_SERIAL.begin(38400);
   //initialize serial to brain or BLE if has no brain
+#ifndef IS_STANDALONE  
   BRAIN_COMM_SERIAL.begin(38400);
+#endif  
 }
 
 static void makeCleanupBrain() {
@@ -125,6 +127,10 @@ static void processLcdCommand() {
       //clear lcd
       case 'c' :
         resetLinePos();
+        break;
+      case 's' :
+        resetLinePos();
+        showStartMessage();
         break;
     }
   } else {
