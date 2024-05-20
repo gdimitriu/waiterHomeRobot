@@ -91,7 +91,7 @@ bool printNextLineText(char *text, uint8_t fontSize) {
       }
       break;
   }
-  ucg.setColor(MAX_COLOR, MAX_COLOR, MAX_COLOR);
+  ucg.setColor(MIN_COLOR, MIN_COLOR, MIN_COLOR);
   ucg.setPrintPos(2, currentPosition);
   ucg.setPrintDir(0);
   ucg.print(text);

@@ -203,7 +203,7 @@ void receiveCommand() {
       if ( brainIndex < ( SIZE_BUFFER_BRAIN - 1 ) ) {
         char inChar = BRAIN_COMM_SERIAL.read(); // Read a character
         boolean isData = true;
-        if ( inChar=='\r' || inChar=='\n' || inChar =='\0' || inChar < 35 || inChar > 122 ) {
+        if ( inChar=='\r' || inChar=='\n' || inChar =='\0' ) {
           isData = false;
         } else 
         //commands start with a letter capital or small
