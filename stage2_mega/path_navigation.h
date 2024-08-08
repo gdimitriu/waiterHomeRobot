@@ -1,5 +1,7 @@
 /*
- * Stage 2 - Power monitoring
+ *  Stage 2 - path navigation module
+ * 
+ * string_list.h (a string list that is used to store path commands)
  * 
  * Copyright 2024 Gabriel Dimitriu
  *
@@ -20,36 +22,55 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#ifndef __POWER_MONITORING_H__
-#define __POWER_MONITORING_H__
-#include "configuration.h"
-#include <Arduino.h>
+#ifndef __PATH_NAVIGATION_H__
+#define __PATH_NAVIGATION_H__
 
 /**********************************************
  * 
- * initialize timers for power monitoring
+ * clear command list
  * 
  **********************************************/
-extern void initPowerMonitoring();
+extern void clearList();
 
 /**********************************************
  * 
- * get the power level as volts
+ * add a command to command list
  * 
  **********************************************/
-extern float getPowerLevel();
+extern void addCommand(char *data);
 
 /**********************************************
  * 
- * get the power level as bar
+ * load command list from file
  * 
  **********************************************/
-extern uint8_t getPowerLineBar();
+extern void loadFileInMemory(char *file);
+
 /**********************************************
  * 
- * print current power level when timeout occurs
+ * save command list to file
  * 
  **********************************************/
-extern void usePowerLevelAtTimeout();
+extern void saveFileFromMemory(char *file);
 
+/**********************************************
+ * 
+ * get next command to command list
+ * 
+ **********************************************/
+extern char* getNextCommand();
+
+/**********************************************
+ * 
+ * get previous command to command list
+ * 
+ **********************************************/
+extern char* getPreviousCommand();
+
+/**********************************************
+ * 
+ * get commands direction true for direct false for reverse
+ * 
+ **********************************************/
+extern void setPathDirection(bool direction);
 #endif

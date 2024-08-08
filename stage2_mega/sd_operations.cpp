@@ -83,6 +83,26 @@ bool openFile(char *fileName) {
   return true;
 }
 
+void removeFile(char *fileName) {
+  if ( SD.exists(fileName) ) {
+    SD.remove(fileName);
+    return true;
+  }
+}
+
+bool openWriteFile(char *fileName) {
+  if (fd) {
+    fd.close();
+  }
+  if ( SD.exists(fileName) ) {
+    SD.remove(fileName);
+  }
+  fd = SD.open(fileName, FILE_WRITE);
+  if ( !fd )
+    return false;
+  return true;
+}
+
 void closeFile() {
   if(fd) {
     fd.close();
@@ -118,6 +138,11 @@ void readFullFile(char *buffer, unsigned int size) {
     buffer[index++] = ch;
     buffer[index] = '\0';
   }
+}
+
+void writeNextLine(char *value) {
+  fd.write(value, strlen(value) * sizeof(char));
+  fd.write('\n');
 }
 
 #ifdef TEST_SD_LCD  

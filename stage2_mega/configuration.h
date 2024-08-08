@@ -162,4 +162,46 @@
  **********************************************/
 #define POWER_MONITORING_INTERVAL 60000
 
+/**********************************************
+ * 
+ * ultrasonics servo pin
+ *  
+ **********************************************/
+#define ULTRASONIC_SERVO_PIN 2
+
+/**********************************************
+ * 
+ * ultrasonics front trigger pin
+ *  
+ **********************************************/
+#define ULTRASONIC_FRONT_TRIG_PIN 3
+
+/**********************************************
+ * 
+ * ultrasonics front echo pin
+ *  
+ **********************************************/
+#define ULTRASONIC_FRONT_ECHO_PIN 4
+
+
+/**********************************************
+ * 
+ * ultrasonics rear trigger pin
+ *  
+ **********************************************/
+#define ULTRASONIC_REAR_TRIG_PIN 5
+
+/**********************************************
+ * 
+ * ultrasonics rear echo pin
+ *  
+ **********************************************/
+#define ULTRASONIC_REAR_ECHO_PIN 6
+
+/**********************************************
+ * 
+ * rear distance from sensor to chassy in cm
+ *  
+ **********************************************/
+#define REAR_DISTANCE 38
 #endif

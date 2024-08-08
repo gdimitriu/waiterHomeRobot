@@ -1,5 +1,5 @@
 /*
- * Stage 2 - Power monitoring
+ * Stage 2 - ultrasonics operations
  * 
  * Copyright 2024 Gabriel Dimitriu
  *
@@ -20,36 +20,44 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 */
 
-#ifndef __POWER_MONITORING_H__
-#define __POWER_MONITORING_H__
-#include "configuration.h"
-#include <Arduino.h>
+#ifndef __ULTRASONICS_H__
+#define __ULTRASONICS_H__
 
 /**********************************************
  * 
- * initialize timers for power monitoring
- * 
+ * initialization
+ *  
  **********************************************/
-extern void initPowerMonitoring();
+extern void initUltrasonics();
 
 /**********************************************
  * 
- * get the power level as volts
+ * get front sensor distance from xx degree
+ *  
+ **********************************************/
+ extern unsigned long getFrontDistance(int degree);
+
+ /**********************************************
+ * 
+ * get rear sensor distance from xx degree
+ *  
+ **********************************************/
+ extern unsigned long getRearDistance(int degree);
+
+ /**********************************************
+ * 
+ * stop distance
+ * (it will make decision to change path)  
  * 
  **********************************************/
-extern float getPowerLevel();
+ extern unsigned long stopDistance;
 
 /**********************************************
  * 
- * get the power level as bar
+ * low power distance
+ * below this distance it will go with slow down
  * 
  **********************************************/
-extern uint8_t getPowerLineBar();
-/**********************************************
- * 
- * print current power level when timeout occurs
- * 
- **********************************************/
-extern void usePowerLevelAtTimeout();
+ extern unsigned long lowPowerDistance;
 
-#endif
+ #endif

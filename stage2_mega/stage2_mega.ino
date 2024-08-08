@@ -23,6 +23,7 @@
 #include "communication.h"
 #include "lcd_operations.h"
 #include "sd_operations.h"
+#include "ultrasonics.h"
 #include "rfid.h"
 #include "power_monitoring.h"
 
@@ -51,6 +52,7 @@ void setup() {
 
   initPowerMonitoring();
   printCurrentACCPower(getPowerLevel());
+  initUltrasonics();
 }
 
 void loop() {

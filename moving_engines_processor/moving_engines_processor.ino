@@ -250,14 +250,6 @@ bool makeMove() {
       sprintf(buffer,"%d\r\n",currentPower);
       BTSerial.print(buffer);
       BTSerial.flush();
-    }  else if ( inData[0] == 'd' ) {
-      sprintf(buffer,"%d\r\n",0);
-      BTSerial.print(buffer);
-      BTSerial.flush();
-    } else if ( inData[0] == 's' ) {
-      sprintf(buffer,"%d\r\n",0);
-      BTSerial.print(buffer);
-      BTSerial.flush();
     } else if ( inData[0] == 'b' ) {  //break all engines
       breakAllEngines();
     } else if ( inData[0] == 'C' ) { //get encoder values
@@ -289,12 +281,6 @@ bool makeMove() {
         return setMinPowerCommand();
       } else if ( inData[0] == 'c' ) {
         return  setCurrentPowerCommand();
-      } else if ( inData[0] == 'd' ) {
-        //this does not support low power distance
-        return processPlatformUnsupportedCommand();
-      } else if ( inData[0] == 's' ) {
-        //this does not support stop distance
-        return processPlatformUnsupportedCommand();
       } else if ( inData[0] == 'M' ) {
         return moveOrRotateUntilNextCommand();
       } else if ( inData[0] == 'm' ) { //move or rotate with distance

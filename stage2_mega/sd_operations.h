@@ -41,6 +41,15 @@ extern void initSDCardReader();
  **********************************************/
 extern bool openFile(char *fileName);
 
+
+/**********************************************
+ * 
+ * open for write the file which should be 8.3
+ * if the file exist it will be deleted
+ * 
+ **********************************************/
+extern bool openWriteFile(char *fileName);
+
 /**********************************************
  * 
  * close file
@@ -50,10 +59,23 @@ extern void closeFile();
 
 /**********************************************
  * 
+ * remove file
+ * 
+ **********************************************/
+extern void removeFile(char *fileName);
+/**********************************************
+ * 
  * read next line from the opened file
  * 
  **********************************************/
 extern char* readNextLine();
+
+/**********************************************
+ * 
+ * write next line in the  opened file
+ * 
+ **********************************************/
+extern void writeNextLine(char* value);
 
 /**********************************************
  * 

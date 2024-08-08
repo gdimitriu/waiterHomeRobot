@@ -24,10 +24,13 @@
 #include "power_monitoring.h"
 #include "sd_operations.h"
 #include "lcd_operations.h"
+#include "ultrasonics.h"
+#include "path_navigation.h"
 
 
 #define SIZE_BUFFER_BRAIN 256
 static char inDataBrain[SIZE_BUFFER_BRAIN];
+static char outDataBrain[SIZE_BUFFER_BRAIN];
 
 static int brainIndex;
 
@@ -48,15 +51,64 @@ static void makeCleanupBrain() {
   BRAIN_COMM_SERIAL.flush();
 }
 
-static void sendCommandToEngines() {
-  ENGINES_PROC_SERIAL.print(inDataBrain);
+static void sendCommandToEngines(char *inData) {
+  ENGINES_PROC_SERIAL.print(inData);
   ENGINES_PROC_SERIAL.flush();    
   makeCleanupBrain();
 }
 
-static boolean isEnginesCommand() {
+static void processAutoCommand(char *dataIn) {
+  char *inData = dataIn;
+  inData++;
+  inData[strlen(inData)] = '\0';
+  int position;
+  for ( uint8_t i = 0; i < strlen(inData); i++ ) {
+    if ( inData[i] == ',' ) {
+      position = i;
+      break;
+    }
+  }
+  char buf[10];
+  memset(buf,0,10*sizeof(char));
+  for ( int i = 0 ; i < position; i++ ) {
+    buf[i] = inData[i];
+  }
+  int moveData = atoi(buf);
+  memset(buf,0,10*sizeof(char));
+  int idx = 0;
+  for ( int i = position + 1; i < strlen(inData); i++ ) {
+    buf[idx] = inData[i];
+    idx++;
+  }
+  int rotateData = atoi(buf);
+  if ( moveData == 0 && rotateData == 0 ) {
+    
+  } else if ( rotateData == 0 ) {
+    if ( moveData > 0 ) {
+      long distance = getFrontDistance(90);
+      if ( distance > lowPowerDistance ) {
+        
+      } else if ( distance < stopDistance ) {
+        
+      }
+    } else {
+      long distance = getRearDistance(90);
+      if ( distance > lowPowerDistance ) {
+        
+      } else if ( distance < stopDistance ) {
+        
+      }
+    }
+  } else {
+    
+  }
+  //send back command to engines
+  sendCommandToEngines(dataIn);
+}
+
+static boolean isEnginesCommand(char *dataIn) {
   //special command with data
-  switch (inDataBrain[0]) {
+  switch (dataIn[0]) {
     case 'v': //set minPower
     case 'V': //set maxPower
     case 'm': //move/rotate with distance
@@ -66,6 +118,15 @@ static boolean isEnginesCommand() {
     case 'C': //get encoder values
     case 'R': //reset encoders
     case 'r': //RFID operations
+      return true;
+    default:
+      return false;
+  }
+}
+
+static boolean isAutoCommand(char *dataIn) {
+  switch (dataIn[0]) {
+    case 'm': //move/rotate with distance
       return true;
     default:
       return false;
@@ -169,10 +230,139 @@ static void processSoundCommand() {
   makeCleanupBrain();
 }
 
+static boolean isValidNumber( char *data, int size )
+{
+  if ( size == 0 ) return false;
+   if( !( data[0] == '+' || data[0] == '-' || isDigit(data[0]) ) ) return false;
+
+   for( byte i=1; i<size; i++ )
+   {
+       if( !( isDigit(data[i]) || data[i] == '.' ) ) return false;
+   }
+   return true;
+}
+
+static void sendBackStopDistance() {
+  memset(outDataBrain,0,SIZE_BUFFER_BRAIN * sizeof(char));
+  sprintf(outDataBrain,"%ld\n\r",stopDistance);
+  BRAIN_COMM_SERIAL.print(outDataBrain);
+  BRAIN_COMM_SERIAL.flush();
+  makeCleanupBrain();
+}
+
+static void setStopDistance() {
+  BRAIN_COMM_SERIAL.println("OK");
+  BRAIN_COMM_SERIAL.flush();
+  //remove s from command
+  for ( uint8_t i = 0 ; i < strlen(inDataBrain); i++ ) {
+    inDataBrain[i]=inDataBrain[i+1];
+  }
+  if ( !isValidNumber(inDataBrain, brainIndex - 2) ) {
+    makeCleanupBrain();
+    return;
+  }
+  if ( atol(inDataBrain) < 0 ) {
+    makeCleanupBrain();
+    return;
+  }
+  stopDistance = atol(inDataBrain);
+  makeCleanupBrain();
+  return;
+}
+
+static void sendBackLowPowerDistance() {
+  memset(outDataBrain,0,SIZE_BUFFER_BRAIN * sizeof(char));
+  sprintf(outDataBrain,"%ld\n\r",lowPowerDistance);
+  BRAIN_COMM_SERIAL.print(outDataBrain);
+  BRAIN_COMM_SERIAL.flush();
+  makeCleanupBrain();
+}
+
+static void setLowPowerDistance() {
+  BRAIN_COMM_SERIAL.println("OK");
+  BRAIN_COMM_SERIAL.flush();
+  //remove d from command
+  for ( uint8_t i = 0 ; i < strlen(inDataBrain); i++ ) {
+    inDataBrain[i]=inDataBrain[i+1];
+  }
+  if ( !isValidNumber(inDataBrain, brainIndex - 2) ) {
+    makeCleanupBrain();
+    return;
+  }
+  if ( atol(inDataBrain) < 0 ) {
+    makeCleanupBrain();
+    return;
+  }
+  lowPowerDistance = atol(inDataBrain);
+  makeCleanupBrain();
+  return;
+
+}
+
+static void processPathCommand(char *inData) {
+  char *currentData = inData;
+  if ( currentData[0] == 'N' ) {
+    currentData++;
+    if ( currentData[0] == 'f' ) { //file operations
+      currentData++;
+      if ( currentData[0] == 'l' ) { //load file
+        currentData++;
+        loadFileInMemory(currentData);
+      } else if ( currentData[0] == 's' ) { //save file
+        currentData++;
+        saveFileFromMemory(currentData);
+      } else if (currentData[0] == 'r' ) { //remove file
+        removeFile(currentData);
+      }
+    } else {
+      switch ( currentData[0] ) {
+        case '\0' : //clear list
+          clearList();
+          break;
+        case 'D' : // move direct
+          break;
+        case 'B' : //move reverse
+          break;
+        case 'R' : //move using RFID
+          break;
+        default: //add command
+          currentData[strlen(currentData)] = '#';
+          currentData[strlen(currentData)] = '\0';
+          addCommand(currentData);
+      }
+    }
+  } else if ( currentData[0] == 'D' ) { //move direct with memory
+    setPathDirection(true);
+    char* command = getNextCommand();
+    while ( command != NULL ) {
+      if (command[0] == 'm') {
+        processAutoCommand(command);        
+      } else if ( isEnginesCommand(command) ) {
+        sendCommandToEngines(command);
+      }
+      command = getNextCommand();
+    }
+  } else if ( currentData[0] == 'B' ) { //move backwards with memory
+    setPathDirection(false);
+    char* command = getPreviousCommand();
+    while ( command != NULL ) {
+      if (command[0] == 'm') {
+        processAutoCommand(command);
+      } else if ( isEnginesCommand(command) ) {
+        sendCommandToEngines(command);
+      }
+      command = getPreviousCommand();
+    }
+  }
+  makeCleanupBrain();
+}
+
 static void processCommand() {
-  if ( isEnginesCommand() ) { 
+  if ( isEnginesCommand(inDataBrain) ) { 
     //single command are routed to the engines processor and wait reply and send back data to brain
-    sendCommandToEngines();
+    sendCommandToEngines(inDataBrain);
+  } else if ( isAutoCommand(inDataBrain)) {
+    processAutoCommand(inDataBrain);
   } else { //it is for me
     switch (inDataBrain[0]) {
       case 'P': //get accumulator power level
@@ -183,6 +373,23 @@ static void processCommand() {
         break;
       case 'l': //lcd operation
         processLcdCommand();
+        break;
+      case 's':
+        if ( strlen(inDataBrain) == 1 )
+          sendBackStopDistance();
+        else
+          setStopDistance();
+        break;
+      case 'd':
+        if ( strlen(inDataBrain) == 1 )
+          sendBackLowPowerDistance();
+        else
+          setLowPowerDistance();
+        break;
+      case 'N':
+      case 'D':
+      case 'B':
+        processPathCommand(inDataBrain);
         break;
       default:
         makeCleanupBrain();
