@@ -315,10 +315,7 @@ static void processPathCommand(char *inData) {
         removeFile(currentData);
       }
     } else {
-      switch ( currentData[0] ) {
-        case '\0' : //clear list
-          clearList();
-          break;
+      switch ( currentData[0] ) {        
         case 'D' : // move direct
           break;
         case 'B' : //move reverse
@@ -330,6 +327,12 @@ static void processPathCommand(char *inData) {
           currentData[strlen(currentData)] = '\0';
           addCommand(currentData);
       }
+    }
+  } else if ( currentData[0] == 'n' ) {
+    currentData++;
+    if ( currentData[0] == '\0' ) { //clear list
+          clearList();
+          break;
     }
   } else if ( currentData[0] == 'D' ) { //move direct with memory
     setPathDirection(true);
