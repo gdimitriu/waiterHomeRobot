@@ -332,7 +332,6 @@ static void processPathCommand(char *inData) {
     currentData++;
     if ( currentData[0] == '\0' ) { //clear list
           clearList();
-          break;
     }
   } else if ( currentData[0] == 'D' ) { //move direct with memory
     setPathDirection(true);
